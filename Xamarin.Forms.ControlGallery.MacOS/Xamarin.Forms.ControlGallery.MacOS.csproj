@@ -115,25 +115,13 @@
       <Project>{57B8B73D-C3B5-4C42-869E-7B2F17D354AC}</Project>
       <Name>Xamarin.Forms.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Xamarin.Forms.Maps\Xamarin.Forms.Maps.csproj">
-      <Project>{7D13BAC2-C6A4-416A-B07E-C169B199E52B}</Project>
-      <Name>Xamarin.Forms.Maps</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">
       <Project>{67F9D3A8-F71E-4428-913F-C37AE82CDB24}</Project>
       <Name>Xamarin.Forms.Platform</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Xamarin.Forms.Platform.MacOS\Xamarin.Forms.Platform.MacOS.csproj">
-      <Project>{C0059C45-EA1E-42F3-8A0E-794BB547EC3C}</Project>
-      <Name>Xamarin.Forms.Platform.MacOS</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Xamarin.Forms.Xaml\Xamarin.Forms.Xaml.csproj">
       <Project>{9DB2F292-8034-4E06-89AD-98BBDA4306B9}</Project>
       <Name>Xamarin.Forms.Xaml</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Xamarin.Forms.Maps.MacOS\Xamarin.Forms.Maps.MacOS.csproj">
-      <Project>{C3C24A6D-2D0C-4053-9FCC-E54FF9CA1884}</Project>
-      <Name>Xamarin.Forms.Maps.MacOS</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

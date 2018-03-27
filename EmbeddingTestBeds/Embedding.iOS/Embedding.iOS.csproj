@@ -88,12 +88,6 @@
       <Project>{57b8b73d-c3b5-4c42-869e-7b2f17d354ac}</Project>
       <Name>Xamarin.Forms.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Xamarin.Forms.Platform.iOS\Xamarin.Forms.Platform.iOS.csproj">
-      <Project>{271193c1-6e7c-429c-a36d-3f1be5267231}</Project>
-      <Name>Xamarin.Forms.Platform.iOS</Name>
-      <IsAppExtension>false</IsAppExtension>
-      <IsWatchApp>false</IsWatchApp>
-    </ProjectReference>
     <ProjectReference Include="..\..\Xamarin.Forms.Platform\Xamarin.Forms.Platform.csproj">
       <Project>{67f9d3a8-f71e-4428-913f-c37ae82cdb24}</Project>
       <Name>Xamarin.Forms.Platform</Name>
@@ -101,10 +95,6 @@
     <ProjectReference Include="..\Embedding.XF\Embedding.XF.csproj">
       <Project>{02eac00f-0425-4959-ac64-e921627265ca}</Project>
       <Name>Embedding.XF</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Stubs\Xamarin.Forms.Platform.iOS\Xamarin.Forms.Platform.iOS %28Forwarders%29.csproj">
-      <Project>{39B3457F-01D8-43D0-8E84-D8C4F73CF48D}</Project>
-      <Name>Xamarin.Forms.Platform.iOS (Forwarders)</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\iOS\Xamarin.iOS.CSharp.targets" />
