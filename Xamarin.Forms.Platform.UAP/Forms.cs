@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.Core;
 using Windows.ApplicationModel.Resources.Core;
 using Windows.Foundation.Metadata;
 using Windows.UI.Core;
@@ -16,6 +17,9 @@ namespace Xamarin.Forms
 {
 	public static partial class Forms
 	{
+		[ThreadStatic]
+		internal static CoreApplicationView CurrentCoreApplicationView = null;
+
 		const string LogFormat = "[{0}] {1}";
 
 		static ApplicationExecutionState s_state;
