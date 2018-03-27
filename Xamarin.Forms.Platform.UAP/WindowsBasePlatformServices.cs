@@ -36,7 +36,10 @@ namespace Xamarin.Forms.Platform.UWP
 
 		public void BeginInvokeOnMainThread(Action action)
 		{
-			_dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => action()).WatchForError();
+			if (Forms.CurrentCoreApplicationView == null)
+				_dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => action()).WatchForError();
+			else
+				Forms.CurrentCoreApplicationView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => action()).WatchForError();
 		}
 
 		public Ticker CreateTicker()
