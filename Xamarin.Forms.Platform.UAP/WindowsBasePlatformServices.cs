@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices.WindowsRuntime;
 using System.Text;
 using System.Threading;
@@ -36,10 +39,37 @@ namespace Xamarin.Forms.Platform.UWP
 
 		public void BeginInvokeOnMainThread(Action action)
 		{
-			if (Forms.CurrentCoreApplicationView == null)
-				_dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => action()).WatchForError();
-			else
-				Forms.CurrentCoreApplicationView.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => action()).WatchForError();
+			Debug.WriteLine("Direct call to BeginInvokeOnMainThread");
+			_dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => action()).WatchForError();
+		}
+		object currentDispatcherLocker = new object();
+		public void BeginInvokeOnMainThread(Action action, string idWindow)
+		{
+
+			if(idWindow == "ABC")
+			{
+				Forms.window1.RunAsync(CoreDispatcherPriority.Normal, () => action()).WatchForError();
+			}
+
+			if (idWindow == "DEF")
+			{
+				Forms.window2.RunAsync(CoreDispatcherPriority.Normal, () => action()).WatchForError();
+			}
+
+			//Debug.WriteLine("Running BeginInvokeOnMainThread on window " + idWindow);
+			//lock (currentDispatcherLocker)
+			//{
+			//	if (Forms.Dispatchers.TryGetValue(idWindow, out CoreApplicationView currentView))
+			//	{
+			//		Debug.WriteLine("Found dispatcher for idwindow " + idWindow);
+			//		currentView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => action()).WatchForError();
+			//	}
+			//	else
+			//	{
+			//		//this.BeginInvokeOnMainThread(action);
+			//		Debug.WriteLine("Couldnt find dispatcher for idwindow " + idWindow);
+			//	}
+			//}
 		}
 
 		public Ticker CreateTicker()

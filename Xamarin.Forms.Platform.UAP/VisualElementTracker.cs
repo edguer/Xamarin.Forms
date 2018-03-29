@@ -4,6 +4,8 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using System.Threading;
+using Windows.ApplicationModel.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
@@ -226,21 +228,24 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected virtual void UpdateNativeControl()
 		{
-			if (Element == null || Container == null)
-				return;
+			//UAP.UIUpdaterHelper.RunOnUIThread(Element, () =>
+			//{
+				if (Element == null || Container == null)
+					return;
 
-			UpdateVisibility(Element, Container);
-			UpdateOpacity(Element, Container);
-			UpdateScaleAndRotation(Element, Container);
-			UpdateInputTransparent(Element, Container);
+				UpdateVisibility(Element, Container);
+				UpdateOpacity(Element, Container);
+				UpdateScaleAndRotation(Element, Container);
+				UpdateInputTransparent(Element, Container);
 
-			if (_invalidateArrangeNeeded)
-			{
-				MaybeInvalidate();
-			}
-			_invalidateArrangeNeeded = false;
+				if (_invalidateArrangeNeeded)
+				{
+					MaybeInvalidate();
+				}
+				_invalidateArrangeNeeded = false;
 
-			OnUpdated();
+				OnUpdated();
+			//});
 		}
 
 		void HandlePan(ManipulationDeltaRoutedEventArgs e, View view)
@@ -285,12 +290,15 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void MaybeInvalidate()
 		{
-			if (Element.IsInNativeLayout)
-				return;
+			UAP.UIUpdaterHelper.RunOnUIThread(Element, () =>
+			{
+				if (Element.IsInNativeLayout)
+					return;
 
-			var parent = (FrameworkElement)Container.Parent;
-			parent?.InvalidateMeasure();
-			Container.InvalidateMeasure();
+				var parent = (FrameworkElement)Container.Parent;
+				parent?.InvalidateMeasure();
+				Container.InvalidateMeasure();
+			});
 		}
 
 		void ModelGestureRecognizersOnCollectionChanged(object sender, NotifyCollectionChangedEventArgs notifyCollectionChangedEventArgs)
@@ -442,82 +450,98 @@ namespace Xamarin.Forms.Platform.UWP
 
 		static void UpdateInputTransparent(VisualElement view, FrameworkElement frameworkElement)
 		{
-			if (view is Layout)
+			UAP.UIUpdaterHelper.RunOnUIThread(view, () =>
 			{
-				// Let VisualElementRenderer handle this
-			}
+				if (view is Layout)
+				{
+					// Let VisualElementRenderer handle this
+				}
 
-			frameworkElement.IsHitTestVisible = view.IsEnabled && !view.InputTransparent;
+				frameworkElement.IsHitTestVisible = view.IsEnabled && !view.InputTransparent;
+			});
 		}
 
 		static void UpdateOpacity(VisualElement view, FrameworkElement frameworkElement)
 		{
-			frameworkElement.Opacity = view.Opacity;
+			UAP.UIUpdaterHelper.RunOnUIThread(view, () =>
+			{
+				frameworkElement.Opacity = view.Opacity;
+			});
 		}
 
 		static void UpdateRotation(VisualElement view, FrameworkElement frameworkElement)
 		{
-			double anchorX = view.AnchorX;
-			double anchorY = view.AnchorY;
-			double rotationX = view.RotationX;
-			double rotationY = view.RotationY;
-			double rotation = view.Rotation;
-			double translationX = view.TranslationX;
-			double translationY = view.TranslationY;
-			double scale = view.Scale;
+			UAP.UIUpdaterHelper.RunOnUIThread(view, () =>
+			{
+				double anchorX = view.AnchorX;
+				double anchorY = view.AnchorY;
+				double rotationX = view.RotationX;
+				double rotationY = view.RotationY;
+				double rotation = view.Rotation;
+				double translationX = view.TranslationX;
+				double translationY = view.TranslationY;
+				double scale = view.Scale;
 
-			if (rotationX % 360 == 0 && rotationY % 360 == 0 && rotation % 360 == 0 && translationX == 0 && translationY == 0 && scale == 1)
-			{
-				frameworkElement.Projection = null;
-			}
-			else
-			{
-				// PlaneProjection removes touch and scrollwheel functionality on scrollable views such
-				// as ScrollView, ListView, and TableView. If neither RotationX or RotationY are set
-				// (i.e. their absolute value is 0), a CompositeTransform is instead used to allow for
-				// rotation of the control on a 2D plane, and the other values are set. Otherwise, the
-				// rotation values are set, but the aforementioned functionality will be lost.
-				if (Math.Abs(view.RotationX) == 0 && Math.Abs(view.RotationY) == 0)
+				if (rotationX % 360 == 0 && rotationY % 360 == 0 && rotation % 360 == 0 && translationX == 0 && translationY == 0 && scale == 1)
 				{
-					frameworkElement.Projection = new PlaneProjection
-					{
-						CenterOfRotationX = anchorX,
-						CenterOfRotationY = anchorY,
-						GlobalOffsetX = scale == 0 ? 0 : translationX / scale,
-						GlobalOffsetY = scale == 0 ? 0 : translationY / scale,
-						RotationX = -rotationX,
-						RotationY = -rotationY,
-						RotationZ = -rotation
-					};
+					frameworkElement.Projection = null;
 				}
 				else
 				{
-					frameworkElement.RenderTransform = new CompositeTransform
+					// PlaneProjection removes touch and scrollwheel functionality on scrollable views such
+					// as ScrollView, ListView, and TableView. If neither RotationX or RotationY are set
+					// (i.e. their absolute value is 0), a CompositeTransform is instead used to allow for
+					// rotation of the control on a 2D plane, and the other values are set. Otherwise, the
+					// rotation values are set, but the aforementioned functionality will be lost.
+					if (Math.Abs(view.RotationX) == 0 && Math.Abs(view.RotationY) == 0)
 					{
-						CenterX = anchorX,
-						CenterY = anchorY,
-						Rotation = rotation,
-						TranslateX = scale == 0 ? 0 : translationX / scale,
-						TranslateY = scale == 0 ? 0 : translationY / scale
-					};
+						frameworkElement.Projection = new PlaneProjection
+						{
+							CenterOfRotationX = anchorX,
+							CenterOfRotationY = anchorY,
+							GlobalOffsetX = scale == 0 ? 0 : translationX / scale,
+							GlobalOffsetY = scale == 0 ? 0 : translationY / scale,
+							RotationX = -rotationX,
+							RotationY = -rotationY,
+							RotationZ = -rotation
+						};
+					}
+					else
+					{
+						frameworkElement.RenderTransform = new CompositeTransform
+						{
+							CenterX = anchorX,
+							CenterY = anchorY,
+							Rotation = rotation,
+							TranslateX = scale == 0 ? 0 : translationX / scale,
+							TranslateY = scale == 0 ? 0 : translationY / scale
+						};
+					}
 				}
-			}
+			});
 		}
 
 		static void UpdateScaleAndRotation(VisualElement view, FrameworkElement frameworkElement)
 		{
-			double anchorX = view.AnchorX;
-			double anchorY = view.AnchorY;
-			double scale = view.Scale;
-			frameworkElement.RenderTransformOrigin = new Windows.Foundation.Point(anchorX, anchorY);
-			frameworkElement.RenderTransform = new ScaleTransform { ScaleX = scale, ScaleY = scale };
+			UAP.UIUpdaterHelper.RunOnUIThread(view, () =>
+			{
+				double anchorX = view.AnchorX;
+				double anchorY = view.AnchorY;
+				double scale = view.Scale;
+				frameworkElement.RenderTransformOrigin = new Windows.Foundation.Point(anchorX, anchorY);
+				frameworkElement.RenderTransform = new ScaleTransform { ScaleX = scale, ScaleY = scale };
 
-			UpdateRotation(view, frameworkElement);
+				UpdateRotation(view, frameworkElement);
+			});
+
 		}
 
 		static void UpdateVisibility(VisualElement view, FrameworkElement frameworkElement)
 		{
-			frameworkElement.Visibility = view.IsVisible ? Visibility.Visible : Visibility.Collapsed;
+			UAP.UIUpdaterHelper.RunOnUIThread(view, () => 
+			{
+				frameworkElement.Visibility = view.IsVisible ? Visibility.Visible : Visibility.Collapsed;
+			});
 		}
 
 		void UpdatingGestureRecognizers()
@@ -588,5 +612,7 @@ namespace Xamarin.Forms.Platform.UWP
 		{
 			doubleTappedRoutedEventArgs.Handled = true;
 		}
+
+
 	}
 }

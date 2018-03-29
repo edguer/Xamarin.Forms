@@ -10,6 +10,7 @@ namespace Xamarin.Forms
 {
 	internal sealed class ListProxy : IReadOnlyList<object>, IListProxy, INotifyCollectionChanged
 	{
+		private BindableObject _listView;
 		readonly ICollection _collection;
 		readonly IList _list;
 		readonly int _windowSize;
@@ -26,8 +27,9 @@ namespace Xamarin.Forms
 
 		int _windowIndex;
 
-		internal ListProxy(IEnumerable enumerable, int windowSize = int.MaxValue)
+		internal ListProxy(BindableObject ItemView, IEnumerable enumerable, int windowSize = int.MaxValue)
 		{
+			_listView = ItemView;
 			_windowSize = windowSize;
 
 			ProxiedEnumerable = enumerable;
@@ -213,16 +215,15 @@ namespace Xamarin.Forms
 				sync.Callback(ProxiedEnumerable, sync.Context, () =>
 				{
 					e = e.WithCount(Count);
-					Device.BeginInvokeOnMainThread(action);
+					if (_listView is VisualElement)
+						Device.BeginInvokeOnMainThread(action, (_listView as VisualElement).IdWindow);
 				}, false);
 			}
 			else
 			{
 				e = e.WithCount(Count);
-				if (Device.IsInvokeRequired)
-					Device.BeginInvokeOnMainThread(action);
-				else
-					action();
+				if (_listView is VisualElement)
+					Device.BeginInvokeOnMainThread(action, (_listView as VisualElement).IdWindow);
 			}
 		}
 
