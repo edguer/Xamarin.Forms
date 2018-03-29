@@ -15,6 +15,8 @@ namespace Xamarin.Forms.Internals
 
 		void BeginInvokeOnMainThread(Action action);
 
+		void BeginInvokeOnMainThread(Action action, string idWindow);
+
 		Ticker CreateTicker();
 
 		Assembly[] GetAssemblies();

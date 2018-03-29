@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using Windows.ApplicationModel.Core;
 using Windows.Foundation;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Automation.Peers;
 using Windows.UI.Xaml.Controls;
@@ -114,6 +116,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 		public void SetElement(VisualElement element)
 		{
+			//TODO Windows.ApplicationModel.Core.CoreApplication.GetCurrentView()
 			TElement oldElement = Element;
 			Element = (TElement)element;
 
@@ -125,6 +128,13 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (element != null)
 			{
+				CoreWindow coreWindow = Windows.ApplicationModel.Core.CoreApplication.GetCurrentView().CoreWindow;
+				object idWindowPropValue = null;
+				if (coreWindow.CustomProperties.TryGetValue("idWindow", out idWindowPropValue))
+				{
+					element.IdWindow = idWindowPropValue.ToString();
+				}
+
 				Element.PropertyChanged += OnElementPropertyChanged;
 				Element.FocusChangeRequested += OnElementFocusChangeRequested;
 
@@ -471,12 +481,15 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected virtual void UpdateNativeControl()
 		{
-			UpdateEnabled();
-			UpdateInputTransparent();
-			SetAutomationPropertiesHelpText();
-			SetAutomationPropertiesName();
-			SetAutomationPropertiesAccessibilityView();
-			SetAutomationPropertiesLabeledBy();
+			UAP.UIUpdaterHelper.RunOnUIThread(Element, () =>
+			{
+				UpdateEnabled();
+				UpdateInputTransparent();
+				SetAutomationPropertiesHelpText();
+				SetAutomationPropertiesName();
+				SetAutomationPropertiesAccessibilityView();
+				SetAutomationPropertiesLabeledBy();
+			});
 		}
 
 		internal virtual void OnElementFocusChangeRequested(object sender, VisualElement.FocusRequestArgs args)

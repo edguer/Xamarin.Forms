@@ -52,6 +52,8 @@ namespace Xamarin.Forms
 
 	public abstract class Layout : View, ILayout, ILayoutController, IPaddingElement
 	{
+		public string idWindow;
+
 		public static readonly BindableProperty IsClippedToBoundsProperty = BindableProperty.Create("IsClippedToBounds", typeof(bool), typeof(Layout), false);
 
 		public static readonly BindableProperty CascadeInputTransparentProperty = BindableProperty.Create(
@@ -374,7 +376,7 @@ namespace Xamarin.Forms
 							layout.SizeAllocated(width, height);
 						}
 					}
-				});
+				}, idWindow);
 			}
 		}
 

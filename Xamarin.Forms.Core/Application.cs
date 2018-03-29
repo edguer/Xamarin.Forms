@@ -21,6 +21,16 @@ namespace Xamarin.Forms
 
 		Page _mainPage;
 
+		string _idWindow;
+
+		public string IdWindow
+		{
+			get
+			{
+				return _idWindow;
+			}
+		}
+
 		static SemaphoreSlim SaveSemaphore = new SemaphoreSlim(1, 1);
 
 		public Application()
@@ -36,6 +46,10 @@ namespace Xamarin.Forms
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Application>>(() => new PlatformConfigurationRegistry<Application>(this));
 		}
 
+		public Application(string idWindow) : this()
+		{
+			this._idWindow = idWindow;
+		}
 		public void Quit()
 		{
 			Device.PlatformServices?.QuitApplication();
@@ -191,7 +205,7 @@ namespace Xamarin.Forms
 		{
 			if (Device.IsInvokeRequired)
 			{
-				Device.BeginInvokeOnMainThread(SaveProperties);
+				Device.BeginInvokeOnMainThread(SaveProperties, _idWindow);
 			}
 			else
 			{
@@ -204,7 +218,7 @@ namespace Xamarin.Forms
 		{
 			if (Device.IsInvokeRequired)
 			{
-				Device.BeginInvokeOnMainThread(SaveProperties);
+				Device.BeginInvokeOnMainThread(SaveProperties, _idWindow);
 			}
 			else
 			{

@@ -152,6 +152,7 @@ namespace Xamarin.Forms
 				previous = current;
 			}
 
+			//half
 			Debug.Assert(part != null, "There should always be at least the self part in the expression.");
 
 			if (needsGetter)
@@ -609,7 +610,17 @@ namespace Xamarin.Forms
 					}
 				}
 
-				Device.BeginInvokeOnMainThread(() => _expression.Apply());
+				string idWindow = String.Empty;
+				BindableObject obj = null;
+				if (_expression._weakTarget.TryGetTarget(out obj))
+				{
+					VisualElement visualElement = obj as VisualElement;
+					idWindow = visualElement.IdWindow;
+				}
+
+				Device.BeginInvokeOnMainThread(
+					() => _expression.Apply()
+					, idWindow);
 			}
 
 			public bool TryGetValue(object source, out object value)

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -17,8 +18,10 @@ namespace Xamarin.Forms
 {
 	public static partial class Forms
 	{
-		[ThreadStatic]
-		internal static CoreApplicationView CurrentCoreApplicationView = null;
+		public static ConcurrentDictionary<string, CoreApplicationView> Dispatchers = new ConcurrentDictionary<string, CoreApplicationView>();
+
+		public static CoreDispatcher window1;
+		public static CoreDispatcher window2;
 
 		const string LogFormat = "[{0}] {1}";
 
