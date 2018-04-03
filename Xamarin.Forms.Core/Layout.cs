@@ -318,65 +318,69 @@ namespace Xamarin.Forms
 			child.Layout(region);
 		}
 
+		static object locker = new object();
 		internal virtual void OnChildMeasureInvalidated(VisualElement child, InvalidationTrigger trigger)
 		{
-			ReadOnlyCollection<Element> children = LogicalChildrenInternal;
-			int count = children.Count;
-			for (var index = 0; index < count; index++)
+			lock (locker)
 			{
-				var v = LogicalChildrenInternal[index] as VisualElement;
-				if (v != null && v.IsVisible && (!v.IsPlatformEnabled || !v.IsNativeStateConsistent))
-					return;
-			}
-
-			var view = child as View;
-			if (view != null)
-			{
-				// we can ignore the request if we are either fully constrained or when the size request changes and we were already fully constrainted
-				if ((trigger == InvalidationTrigger.MeasureChanged && view.Constraint == LayoutConstraint.Fixed) ||
-					(trigger == InvalidationTrigger.SizeRequestChanged && view.ComputedConstraint == LayoutConstraint.Fixed))
+				ReadOnlyCollection<Element> children = LogicalChildrenInternal;
+				int count = children.Count;
+				for (var index = 0; index < count; index++)
 				{
-					return;
+					var v = LogicalChildrenInternal[index] as VisualElement;
+					if (v != null && v.IsVisible && (!v.IsPlatformEnabled || !v.IsNativeStateConsistent))
+						return;
 				}
-				if (trigger == InvalidationTrigger.HorizontalOptionsChanged || trigger == InvalidationTrigger.VerticalOptionsChanged)
+
+				var view = child as View;
+				if (view != null)
 				{
-					ComputeConstraintForView(view);
-				}
-			}
-
-			_allocatedFlag = false;
-			if (trigger == InvalidationTrigger.RendererReady)
-			{
-				InvalidateMeasureInternal(InvalidationTrigger.RendererReady);
-			}
-			else
-			{
-				InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
-			}
-
-			s_resolutionList.Add(new KeyValuePair<Layout, int>(this, GetElementDepth(this)));
-			if (!s_relayoutInProgress)
-			{
-				s_relayoutInProgress = true;
-
-				// if thread safety mattered we would need to lock this and compareexchange above
-				IList<KeyValuePair<Layout, int>> copy = s_resolutionList;
-				s_resolutionList = new List<KeyValuePair<Layout, int>>();
-				s_relayoutInProgress = false;
-
-				foreach (KeyValuePair<Layout, int> kvp in copy.OrderBy(kvp => kvp.Value))
-				{
-					Layout layout = kvp.Key;
-					double width = layout.Width, height = layout.Height;
-					if (!layout._allocatedFlag && width >= 0 && height >= 0)
+					// we can ignore the request if we are either fully constrained or when the size request changes and we were already fully constrainted
+					if ((trigger == InvalidationTrigger.MeasureChanged && view.Constraint == LayoutConstraint.Fixed) ||
+						(trigger == InvalidationTrigger.SizeRequestChanged && view.ComputedConstraint == LayoutConstraint.Fixed))
 					{
-						Device.BeginInvokeOnMainThread(() =>
-						{
-							layout.SizeAllocated(width, height);
-						}, layout.IdWindow);
+						return;
+					}
+					if (trigger == InvalidationTrigger.HorizontalOptionsChanged || trigger == InvalidationTrigger.VerticalOptionsChanged)
+					{
+						ComputeConstraintForView(view);
 					}
 				}
 
+				_allocatedFlag = false;
+				if (trigger == InvalidationTrigger.RendererReady)
+				{
+					InvalidateMeasureInternal(InvalidationTrigger.RendererReady);
+				}
+				else
+				{
+					InvalidateMeasureInternal(InvalidationTrigger.MeasureChanged);
+				}
+
+				s_resolutionList.Add(new KeyValuePair<Layout, int>(this, GetElementDepth(this)));
+				if (!s_relayoutInProgress)
+				{
+					s_relayoutInProgress = true;
+
+					// if thread safety mattered we would need to lock this and compareexchange above
+					IList<KeyValuePair<Layout, int>> copy = s_resolutionList;
+					s_resolutionList = new List<KeyValuePair<Layout, int>>();
+					s_relayoutInProgress = false;
+
+					foreach (KeyValuePair<Layout, int> kvp in copy.OrderBy(kvp => kvp.Value))
+					{
+						Layout layout = kvp.Key;
+						double width = layout.Width, height = layout.Height;
+						if (!layout._allocatedFlag && width >= 0 && height >= 0)
+						{
+							Device.BeginInvokeOnMainThread(() =>
+							{
+								layout.SizeAllocated(width, height);
+							}, layout.WindowId);
+						}
+					}
+
+				}
 			}
 		}
 

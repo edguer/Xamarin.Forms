@@ -216,14 +216,14 @@ namespace Xamarin.Forms
 				{
 					e = e.WithCount(Count);
 					if (_listView is VisualElement)
-						Device.BeginInvokeOnMainThread(action, (_listView as VisualElement).IdWindow);
+						Device.BeginInvokeOnMainThread(action, (_listView as VisualElement).WindowId);
 				}, false);
 			}
 			else
 			{
 				e = e.WithCount(Count);
 				if (_listView is VisualElement)
-					Device.BeginInvokeOnMainThread(action, (_listView as VisualElement).IdWindow);
+					Device.BeginInvokeOnMainThread(action, (_listView as VisualElement).WindowId);
 			}
 		}
 

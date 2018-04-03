@@ -28,12 +28,13 @@ namespace Xamarin.Forms.Platform.UWP
 			if (application == null)
 				throw new ArgumentNullException("application");
 
+			SaveDispatcher(application);
 			this.Application = application;
 			Platform = CreatePlatform();
 			Platform.SetPage(application.MainPage, application);
 			this.Application.PropertyChanged += OnApplicationPropertyChanged;
 
-			SaveDispatcher(application);
+			
 
 			this.Application.SendStart();
 		}
@@ -43,7 +44,7 @@ namespace Xamarin.Forms.Platform.UWP
 		/// </summary>
 		void SaveDispatcher(Application application)
 		{
-			Forms.Dispatchers.AddOrUpdate(application.IdWindow, this.Dispatcher, (key, oldValue) => this.Dispatcher);
+			Forms.Dispatchers.AddOrUpdate(application.WindowId, this.Dispatcher, (key, oldValue) => this.Dispatcher);
 		}
 
 		void OnApplicationPropertyChanged(object sender, PropertyChangedEventArgs e)

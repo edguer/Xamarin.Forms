@@ -32,7 +32,7 @@ namespace Xamarin.Forms
 				Loader.Load();
 			NavigationProxy = new NavigationImpl(this);
 			//SetCurrentApplication(this);
-			IdWindow = Guid.NewGuid().ToString();
+			WindowId = Guid.NewGuid().ToString();
 
 			s_current = this;
 
@@ -97,9 +97,7 @@ namespace Xamarin.Forms
 				if (_mainPage != null)
 				{
 					_mainPage.Parent = this;
-					_mainPage.IdWindow = this.IdWindow;
-					System.Diagnostics.Debug.WriteLine("1. Application -> MainPage: " + IdWindow);
-					System.Diagnostics.Debug.WriteLine("2. Application -> MainPage: " + _mainPage.IdWindow);
+					_mainPage.WindowId = this.WindowId;
 					_mainPage.NavigationProxy.Inner = NavigationProxy;
 					InternalChildren.Add(_mainPage);
 				}
@@ -199,7 +197,7 @@ namespace Xamarin.Forms
 		{
 			if (Device.IsInvokeRequired)
 			{
-				Device.BeginInvokeOnMainThread(SaveProperties, IdWindow);
+				Device.BeginInvokeOnMainThread(SaveProperties, WindowId);
 			}
 			else
 			{
@@ -209,7 +207,7 @@ namespace Xamarin.Forms
 
 		public void BeginInvokeOnMainThread(Action action)
 		{
-			Device.BeginInvokeOnMainThread(action, IdWindow);
+			Device.BeginInvokeOnMainThread(action, WindowId);
 		}
 
 		// Don't use this unless there really is no better option
@@ -217,7 +215,7 @@ namespace Xamarin.Forms
 		{
 			if (Device.IsInvokeRequired)
 			{
-				Device.BeginInvokeOnMainThread(SaveProperties, IdWindow);
+				Device.BeginInvokeOnMainThread(SaveProperties, WindowId);
 			}
 			else
 			{

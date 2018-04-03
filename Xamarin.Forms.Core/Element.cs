@@ -91,16 +91,16 @@ namespace Xamarin.Forms
 			}
 		}
 
-		private string _idWindow;
-		public string IdWindow
+		private string _windowId;
+		public string WindowId
 		{
 			get
 			{
-				return String.IsNullOrEmpty(_idWindow) ? _idWindow = _application?.IdWindow : _idWindow;
+				return String.IsNullOrEmpty(_windowId) ? _windowId = _application?.WindowId : _windowId;
 			}
 			set
 			{
-				_idWindow = value;
+				_windowId = value;
 			}
 		}
 
@@ -379,10 +379,10 @@ namespace Xamarin.Forms
 		protected virtual void OnChildAdded(Element child)
 		{
 			_application = Application.Current;
-			IdWindow = _application.IdWindow;
+			WindowId = _application.WindowId;
 
 			child._application = _application;
-			child.IdWindow = _application.IdWindow;
+			child.WindowId = _application.WindowId;
 
 			child.Parent = this;
 			if (Platform != null)

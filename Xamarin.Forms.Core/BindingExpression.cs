@@ -615,7 +615,7 @@ namespace Xamarin.Forms
 				if (_expression._weakTarget.TryGetTarget(out obj))
 				{
 					VisualElement visualElement = obj as VisualElement;
-					idWindow = visualElement.IdWindow;
+					idWindow = visualElement.WindowId;
 				}
 
 				Device.BeginInvokeOnMainThread(

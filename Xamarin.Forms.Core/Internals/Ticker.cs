@@ -9,6 +9,7 @@ namespace Xamarin.Forms.Internals
 	[EditorBrowsable(EditorBrowsableState.Never)]
 	public abstract class Ticker
 	{
+		[ThreadStatic]
 		static Ticker s_ticker;
 		readonly Stopwatch _stopwatch;
 		readonly List<Tuple<int, Func<long, bool>>> _timeouts;
@@ -25,6 +26,7 @@ namespace Xamarin.Forms.Internals
 		}
 
 		public static void SetDefault(Ticker ticker) => Default = ticker;
+
 		public static Ticker Default
 		{
 			internal set { s_ticker = value; }
