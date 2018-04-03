@@ -35,7 +35,6 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (e.OldElement != null)
 			{
-				e.OldElement.IdWindow = UAP.UIUpdaterHelper.GetCurrentWindowId();
 				e.OldElement.ItemSelected -= OnElementItemSelected;
 				e.OldElement.ScrollToRequested -= OnElementScrollToRequested;
 				((ITemplatedItemsView<Cell>)e.OldElement).TemplatedItems.CollectionChanged -= OnCollectionChanged;
@@ -43,7 +42,6 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (e.NewElement != null)
 			{
-				e.NewElement.IdWindow = UAP.UIUpdaterHelper.GetCurrentWindowId();
 				e.NewElement.ItemSelected += OnElementItemSelected;
 				e.NewElement.ScrollToRequested += OnElementScrollToRequested;
 				((ITemplatedItemsView<Cell>)e.NewElement).TemplatedItems.CollectionChanged += OnCollectionChanged;

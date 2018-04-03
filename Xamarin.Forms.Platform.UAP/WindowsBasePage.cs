@@ -1,11 +1,15 @@
 ﻿using System;
 using System.ComponentModel;
 using Windows.ApplicationModel;
+using Windows.ApplicationModel.Core;
 
 namespace Xamarin.Forms.Platform.UWP
 {
 	public abstract class WindowsBasePage : Windows.UI.Xaml.Controls.Page
 	{
+
+		public Application Application { get; private set; }
+
 		public WindowsBasePage()
 		{
 			if (!Windows.ApplicationModel.DesignMode.DesignModeEnabled)
@@ -24,23 +28,33 @@ namespace Xamarin.Forms.Platform.UWP
 			if (application == null)
 				throw new ArgumentNullException("application");
 
-			Application.SetCurrentApplication(application);
+			this.Application = application;
 			Platform = CreatePlatform();
-			Platform.SetPage(Application.Current.MainPage);
-			application.PropertyChanged += OnApplicationPropertyChanged;
+			Platform.SetPage(application.MainPage, application);
+			this.Application.PropertyChanged += OnApplicationPropertyChanged;
 
-			Application.Current.SendStart();
+			SaveDispatcher(application);
+
+			this.Application.SendStart();
+		}
+
+		/// <summary>
+		/// Used to set the current dispatcher to List of Dispatchers.
+		/// </summary>
+		void SaveDispatcher(Application application)
+		{
+			Forms.Dispatchers.AddOrUpdate(application.IdWindow, this.Dispatcher, (key, oldValue) => this.Dispatcher);
 		}
 
 		void OnApplicationPropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.PropertyName == "MainPage")
-				Platform.SetPage(Application.Current.MainPage);
+				Platform.SetPage(this.Application.MainPage, this.Application);
 		}
 
 		void OnApplicationResuming(object sender, object e)
 		{
-			Application.Current.SendResume();
+			this.Application.SendResume();
 		}
 
 		async void OnApplicationSuspending(object sender, SuspendingEventArgs e)
@@ -48,7 +62,7 @@ namespace Xamarin.Forms.Platform.UWP
 			SuspendingDeferral deferral = e.SuspendingOperation.GetDeferral();
 			try
 			{
-				await Application.Current.SendSleepAsync();
+				await this.Application.SendSleepAsync();
 			}
 			finally
 			{

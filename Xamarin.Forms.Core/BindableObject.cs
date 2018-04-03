@@ -49,7 +49,7 @@ namespace Xamarin.Forms
 			if (propertyKey == null)
 				throw new ArgumentNullException("propertyKey");
 
-			ClearValue(propertyKey.BindableProperty, fromStyle:false, checkAccess: false);
+			ClearValue(propertyKey.BindableProperty, fromStyle: false, checkAccess: false);
 		}
 
 		public bool IsSet(BindableProperty targetProperty)
@@ -132,7 +132,7 @@ namespace Xamarin.Forms
 				bindable._inheritedContext = value;
 			}
 
-			bindable.ApplyBindings(skipBindingContext:false, fromBindingContextChanged:true);
+			bindable.ApplyBindings(skipBindingContext: false, fromBindingContextChanged: true);
 			bindable.OnBindingContextChanged();
 		}
 
@@ -154,8 +154,9 @@ namespace Xamarin.Forms
 
 		protected void UnapplyBindings()
 		{
-			for (int i = 0, _propertiesCount = _properties.Count; i < _propertiesCount; i++) {
-				BindablePropertyContext context = _properties [i];
+			for (int i = 0, _propertiesCount = _properties.Count; i < _propertiesCount; i++)
+			{
+				BindablePropertyContext context = _properties[i];
 				if (context.Binding == null)
 					continue;
 
@@ -247,14 +248,16 @@ namespace Xamarin.Forms
 		internal object[] GetValues(params BindableProperty[] properties)
 		{
 			var values = new object[properties.Length];
-			for (var i = 0; i < _properties.Count; i++) {
+			for (var i = 0; i < _properties.Count; i++)
+			{
 				var context = _properties[i];
 				var index = properties.IndexOf(context.Property);
 				if (index < 0)
 					continue;
 				values[index] = context.Value;
 			}
-			for (var i = 0; i < values.Length; i++) {
+			for (var i = 0; i < values.Length; i++)
+			{
 				if (!ReferenceEquals(values[i], null))
 					continue;
 				values[i] = properties[i].DefaultValueCreator == null ? properties[i].DefaultValue : CreateAndAddContext(properties[i]).Value;
@@ -361,33 +364,9 @@ namespace Xamarin.Forms
 		{
 			SetValueCore(property, value, attributes, SetValuePrivateFlags.Default);
 		}
-		public static bool _stop1 = false;
-		public static bool _stop2 = false;
-		public static bool _stop3 = false;
-		public static bool _stop4 = false;
-		public static bool _stop5 = false;
-		public static bool _stop6 = false;
-		public static bool _stop7 = false;
-		public static bool _stop8 = false;
-		public static bool _stop9 = false;
-		public static bool _stop10 = false;
-		public static bool _stop11 = false;
-		public static bool _stop12 = false;
-		public static bool _stop13 = false;
-		public static bool _stop14 = false;
-		public static bool _stop15 = false;
-		public static bool _stop16 = false;
-		public static bool _stop17 = false;
-		public static bool _stop18 = false;
-		public static bool _stop19 = false;
-		public static bool _stop20 = false;
-		public static bool _stop21 = false;
-		public static bool _stop22 = false;
-		public static bool _stop23 = false;
+
 		internal void SetValueCore(BindableProperty property, object value, SetValueFlags attributes, SetValuePrivateFlags privateAttributes)
 		{
-			if (_stop1)
-				return;
 
 			bool checkAccess = (privateAttributes & SetValuePrivateFlags.CheckAccess) != 0;
 			bool manuallySet = (privateAttributes & SetValuePrivateFlags.ManuallySet) != 0;
@@ -395,8 +374,6 @@ namespace Xamarin.Forms
 			bool fromStyle = (privateAttributes & SetValuePrivateFlags.FromStyle) != 0;
 			bool converted = (privateAttributes & SetValuePrivateFlags.Converted) != 0;
 
-			if (_stop2)
-				return;
 
 			if (property == null)
 				throw new ArgumentNullException("property");
@@ -406,8 +383,6 @@ namespace Xamarin.Forms
 				return;
 			}
 
-			if (_stop3)
-				return;
 
 			if (!converted && !property.TryConvert(ref value))
 			{
@@ -415,97 +390,69 @@ namespace Xamarin.Forms
 				return;
 			}
 
-			if (_stop4)
-				return;
 
 			if (property.ValidateValue != null && !property.ValidateValue(this, value))
 				throw new ArgumentException("Value was an invalid value for " + property.PropertyName, "value");
 
-			if (_stop5)
-				return;
 
 			if (property.CoerceValue != null)
 				value = property.CoerceValue(this, value);
 
-			if (_stop6)
-				return;
 
 			BindablePropertyContext context = GetOrCreateContext(property);
 
-			if (_stop7)
-				return;
 
-			if (manuallySet) {
+			if (manuallySet)
+			{
 				context.Attributes |= BindableContextAttributes.IsManuallySet;
 				context.Attributes &= ~BindableContextAttributes.IsSetFromStyle;
-			} else
+			}
+			else
 				context.Attributes &= ~BindableContextAttributes.IsManuallySet;
 
 			if (fromStyle)
 				context.Attributes |= BindableContextAttributes.IsSetFromStyle;
 			// else omitted on purpose
 
-			if (_stop8)
-				return;
 
 			bool currentlyApplying = _applying;
 
-			if (_stop9)
-				return;
 
 			if ((context.Attributes & BindableContextAttributes.IsBeingSet) != 0)
 			{
-				if (_stop10)
-					return;
 
 				Queue<SetValueArgs> delayQueue = context.DelayedSetters;
 				if (delayQueue == null)
 					context.DelayedSetters = delayQueue = new Queue<SetValueArgs>();
 
-				if (_stop11)
-					return;
 
 				delayQueue.Enqueue(new SetValueArgs(property, context, value, currentlyApplying, attributes));
 			}
 			else
 			{
-				if (_stop12)
-					return;
 
 				context.Attributes |= BindableContextAttributes.IsBeingSet;
 				SetValueActual(property, context, value, currentlyApplying, attributes, silent);
 
-				if (_stop13)
-					return;
 
 				Queue<SetValueArgs> delayQueue = context.DelayedSetters;
 
 				if (delayQueue != null)
 				{
-					if (_stop14)
-						return;
 
 					while (delayQueue.Count > 0)
 					{
-						if (_stop17)
-							return;
 
 						SetValueArgs s = delayQueue.Dequeue();
 
-						if (_stop18)
-							return;
 
 						SetValueActual(s.Property, s.Context, s.Value, s.CurrentlyApplying, s.Attributes);
 					}
 
-					if (_stop15)
-						return;
 
 					context.DelayedSetters = null;
 				}
 
-				if (_stop16)
-					return;
 
 				context.Attributes &= ~BindableContextAttributes.IsBeingSet;
 			}
@@ -514,8 +461,9 @@ namespace Xamarin.Forms
 		internal void ApplyBindings(bool skipBindingContext, bool fromBindingContextChanged)
 		{
 			var prop = _properties.ToArray();
-			for (int i = 0, propLength = prop.Length; i < propLength; i++) {
-				BindablePropertyContext context = prop [i];
+			for (int i = 0, propLength = prop.Length; i < propLength; i++)
+			{
+				BindablePropertyContext context = prop[i];
 				BindingBase binding = context.Binding;
 				if (binding == null)
 					continue;
@@ -543,7 +491,7 @@ namespace Xamarin.Forms
 		static void BindingContextPropertyChanged(BindableObject bindable, object oldvalue, object newvalue)
 		{
 			bindable._inheritedContext = null;
-			bindable.ApplyBindings(skipBindingContext: true, fromBindingContextChanged:true);
+			bindable.ApplyBindings(skipBindingContext: true, fromBindingContextChanged: true);
 			bindable.OnBindingContextChanged();
 		}
 
@@ -701,7 +649,7 @@ namespace Xamarin.Forms
 
 				OnPropertyChanged(property.PropertyName);
 
-				 property.PropertyChanged?.Invoke(this, original, value);
+				property.PropertyChanged?.Invoke(this, original, value);
 			}
 		}
 

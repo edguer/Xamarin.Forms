@@ -128,13 +128,6 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (element != null)
 			{
-				CoreWindow coreWindow = Windows.ApplicationModel.Core.CoreApplication.GetCurrentView().CoreWindow;
-				object idWindowPropValue = null;
-				if (coreWindow.CustomProperties.TryGetValue("idWindow", out idWindowPropValue))
-				{
-					element.IdWindow = idWindowPropValue.ToString();
-				}
-
 				Element.PropertyChanged += OnElementPropertyChanged;
 				Element.FocusChangeRequested += OnElementFocusChangeRequested;
 
@@ -143,7 +136,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 				if (AutoTrack && Tracker == null)
 				{
-					Tracker = new VisualElementTracker<TElement, TNativeElement>();	
+					Tracker = new VisualElementTracker<TElement, TNativeElement>();
 				}
 
 				// Disabled until reason for crashes with unhandled exceptions is discovered
@@ -168,7 +161,7 @@ namespace Xamarin.Forms.Platform.UWP
 				controller.EffectControlProvider = this;
 		}
 
-		
+
 
 		public event EventHandler<ElementChangedEventArgs<TElement>> ElementChanged;
 
@@ -319,7 +312,7 @@ namespace Xamarin.Forms.Platform.UWP
 				SetAutomationPropertiesAccessibilityView();
 			else if (e.PropertyName == AutomationProperties.LabeledByProperty.PropertyName)
 				SetAutomationPropertiesLabeledBy();
-			else if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName || 
+			else if (e.PropertyName == VisualElement.InputTransparentProperty.PropertyName ||
 					e.PropertyName == Layout.CascadeInputTransparentProperty.PropertyName)
 				UpdateInputTransparent();
 		}
@@ -481,15 +474,14 @@ namespace Xamarin.Forms.Platform.UWP
 
 		protected virtual void UpdateNativeControl()
 		{
-			UAP.UIUpdaterHelper.RunOnUIThread(Element, () =>
-			{
-				UpdateEnabled();
-				UpdateInputTransparent();
-				SetAutomationPropertiesHelpText();
-				SetAutomationPropertiesName();
-				SetAutomationPropertiesAccessibilityView();
-				SetAutomationPropertiesLabeledBy();
-			});
+
+			UpdateEnabled();
+			UpdateInputTransparent();
+			SetAutomationPropertiesHelpText();
+			SetAutomationPropertiesName();
+			SetAutomationPropertiesAccessibilityView();
+			SetAutomationPropertiesLabeledBy();
+
 		}
 
 		internal virtual void OnElementFocusChangeRequested(object sender, VisualElement.FocusRequestArgs args)

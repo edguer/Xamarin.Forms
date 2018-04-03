@@ -67,7 +67,7 @@ namespace Xamarin.Forms.Platform.UWP
 			InitializeStatusBar();
 		}
 
-		internal void SetPage(Page newRoot)
+		internal void SetPage(Page newRoot, Application app)
 		{
 			if (newRoot == null)
 				throw new ArgumentNullException(nameof(newRoot));
@@ -76,7 +76,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			_navModel.Push(newRoot, null);
 			SetCurrent(newRoot, true);
-			Application.Current.NavigationProxy.Inner = this;
+			app.NavigationProxy.Inner = this;
 		}
 
 		internal void SetPlatformDisconnected(VisualElement visualElement)
@@ -165,64 +165,51 @@ namespace Xamarin.Forms.Platform.UWP
 			return tcs.Task;
 		}
 
-		public string GetIdWindow()
-		{
-			return CoreApplication.GetCurrentView().CoreWindow.CustomProperties["idWindow"].ToString();
-		}
-
 		SizeRequest IPlatform.GetNativeSize(VisualElement element, double widthConstraint, double heightConstraint)
 		{
-			System.Diagnostics.Debug.WriteLine("IPlatform.GetNativeSize " + element.IdWindow);
-			if (CoreApplication.GetCurrentView().CoreWindow.CustomProperties.TryGetValue("idWindow", out object currentCoreWindowId))
+			//if (CoreApplication.GetCurrentView().CoreWindow.CustomProperties.TryGetValue("idWindow", out object currentCoreWindowId))
+			//{				
+			//	if (!element.IdWindow.Equals(currentCoreWindowId.ToString(), StringComparison.InvariantCultureIgnoreCase))
+			//	{
+			//		SizeRequest ret = new SizeRequest();
+			//		AutoResetEvent autoResetEvent = new AutoResetEvent(false);
+
+			//		Device.BeginInvokeOnMainThread(
+			//			() =>
+			//			{
+			//				if (widthConstraint > 0 && heightConstraint > 0)
+			//				{
+			//					IVisualElementRenderer elementRenderer = GetRenderer(element);
+
+			//					if (elementRenderer != null)
+			//					{
+			//						ret =  elementRenderer.GetDesiredSize(widthConstraint, heightConstraint);
+			//					}
+			//				}
+			//				autoResetEvent.Set();
+			//			},
+			//			element.IdWindow);
+
+			//		autoResetEvent.WaitOne();
+			//		System.Diagnostics.Debug.WriteLine("IPlatform.GetNativeSize SizeRequest returned in non-matching code path");
+			//		return ret;
+			//	}
+			//	else
+			//	{
+			// Hack around the fact that Canvas ignores the child constraints.
+			// It is entirely possible using Canvas as our base class is not wise.
+			// FIXME: This should not be an if statement. Probably need to define an interface here.
+			if (widthConstraint > 0 && heightConstraint > 0)
 			{
-				System.Diagnostics.Debug.WriteLine("IPlatform.GetNativeSize CoreWindow.CustomProperties idWindow could be found");
-				if (!element.IdWindow.Equals(currentCoreWindowId.ToString(), StringComparison.InvariantCultureIgnoreCase))
+				IVisualElementRenderer elementRenderer = GetRenderer(element);
+
+				if (elementRenderer != null)
 				{
-					System.Diagnostics.Debug.WriteLine("IPlatform.GetNativeSize idWindows dont match");
-					SizeRequest ret = new SizeRequest();
-					AutoResetEvent autoResetEvent = new AutoResetEvent(false);
-
-					Device.BeginInvokeOnMainThread(
-						() =>
-						{
-							System.Diagnostics.Debug.WriteLine("IPlatform.GetNativeSize BeginInvokeOnMainThread on element context started");
-
-							if (widthConstraint > 0 && heightConstraint > 0)
-							{
-								IVisualElementRenderer elementRenderer = GetRenderer(element);
-
-								if (elementRenderer != null)
-								{
-									System.Diagnostics.Debug.WriteLine("Plataform.cs -> IPlatform.GetNativeSize" + elementRenderer.Element.IdWindow + " Property: " + CoreApplication.GetCurrentView().CoreWindow.CustomProperties["idWindow"].ToString());
-									ret =  elementRenderer.GetDesiredSize(widthConstraint, heightConstraint);
-								}
-							}
-							System.Diagnostics.Debug.WriteLine("IPlatform.GetNativeSize BeginInvokeOnMainThread on element context finished");
-							autoResetEvent.Set();
-						},
-						element.IdWindow);
-
-					autoResetEvent.WaitOne();
-					System.Diagnostics.Debug.WriteLine("IPlatform.GetNativeSize SizeRequest returned in non-matching code path");
-					return ret;
-				}
-				else
-				{
-					System.Diagnostics.Debug.WriteLine("IPlatform.GetNativeSize idWindows match");
-					// Hack around the fact that Canvas ignores the child constraints.
-					// It is entirely possible using Canvas as our base class is not wise.
-					// FIXME: This should not be an if statement. Probably need to define an interface here.
-					if (widthConstraint > 0 && heightConstraint > 0)
-					{
-						IVisualElementRenderer elementRenderer = GetRenderer(element);
-
-						if (elementRenderer != null)
-						{
-							return elementRenderer.GetDesiredSize(widthConstraint, heightConstraint);
-						}
-					}
+					return elementRenderer.GetDesiredSize(widthConstraint, heightConstraint);
 				}
 			}
+			//}
+			//}
 
 			return new SizeRequest();
 		}

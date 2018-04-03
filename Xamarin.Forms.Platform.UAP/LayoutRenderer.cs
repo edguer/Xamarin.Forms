@@ -10,12 +10,6 @@ namespace Xamarin.Forms.Platform.UWP
 {
 	public class LayoutRenderer : ViewRenderer<Layout, FrameworkElement>
 	{
-		private object _idWindow;
-
-		public LayoutRenderer() : base()
-		{
-			CoreApplication.GetCurrentView().CoreWindow.CustomProperties.TryGetValue("idWindow", out _idWindow);
-		}
 
 		protected override void OnElementChanged(ElementChangedEventArgs<Layout> e)
 		{
@@ -23,15 +17,12 @@ namespace Xamarin.Forms.Platform.UWP
 
 			if (e.OldElement != null)
 			{
-				e.OldElement.idWindow = (string)_idWindow;
 				SizeChanged -= OnSizeChanged;
 				SetAutomationId(null);
 			}
 
 			if (e.NewElement != null)
 			{
-				
-				e.NewElement.idWindow = (string)_idWindow;
 				SizeChanged += OnSizeChanged;
 
 				UpdateClipToBounds();

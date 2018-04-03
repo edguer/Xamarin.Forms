@@ -39,37 +39,19 @@ namespace Xamarin.Forms.Platform.UWP
 
 		public void BeginInvokeOnMainThread(Action action)
 		{
-			Debug.WriteLine("Direct call to BeginInvokeOnMainThread");
 			_dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => action()).WatchForError();
 		}
-		object currentDispatcherLocker = new object();
+
 		public void BeginInvokeOnMainThread(Action action, string idWindow)
 		{
-
-			if(idWindow == "ABC")
+			if (Forms.Dispatchers.TryGetValue(idWindow, out CoreDispatcher dispatcher))
 			{
-				Forms.window1.RunAsync(CoreDispatcherPriority.Normal, () => action()).WatchForError();
+				dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => action()).WatchForError();
 			}
-
-			if (idWindow == "DEF")
+			else
 			{
-				Forms.window2.RunAsync(CoreDispatcherPriority.Normal, () => action()).WatchForError();
+				throw new Exception("Unable to locate the dispatcher for informed Window");
 			}
-
-			//Debug.WriteLine("Running BeginInvokeOnMainThread on window " + idWindow);
-			//lock (currentDispatcherLocker)
-			//{
-			//	if (Forms.Dispatchers.TryGetValue(idWindow, out CoreApplicationView currentView))
-			//	{
-			//		Debug.WriteLine("Found dispatcher for idwindow " + idWindow);
-			//		currentView.CoreWindow.Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => action()).WatchForError();
-			//	}
-			//	else
-			//	{
-			//		//this.BeginInvokeOnMainThread(action);
-			//		Debug.WriteLine("Couldnt find dispatcher for idwindow " + idWindow);
-			//	}
-			//}
 		}
 
 		public Ticker CreateTicker()
@@ -150,9 +132,10 @@ namespace Xamarin.Forms.Platform.UWP
 		// "Each view or window has its own dispatcher. In assigned access mode, you should not use the MainView dispatcher, 
 		// instead you should use the CurrentView dispatcher." Checking to see if this isn't null (i.e. the current window is
 		// running above lock) calls through GetCurrentView(), and otherwise through MainView.
-		public bool IsInvokeRequired => LockApplicationHost.GetForCurrentView() != null
+		public bool IsInvokeRequired => Forms.Dispatchers.Count == 1
+			? LockApplicationHost.GetForCurrentView() != null
 			? !CoreApplication.GetCurrentView().Dispatcher.HasThreadAccess
-			: !CoreApplication.MainView.CoreWindow.Dispatcher.HasThreadAccess;
+			: !CoreApplication.MainView.CoreWindow.Dispatcher.HasThreadAccess : false;
 
 		public string RuntimePlatform => Device.UWP;
 

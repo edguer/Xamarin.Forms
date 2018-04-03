@@ -52,8 +52,6 @@ namespace Xamarin.Forms
 
 	public abstract class Layout : View, ILayout, ILayoutController, IPaddingElement
 	{
-		public string idWindow;
-
 		public static readonly BindableProperty IsClippedToBoundsProperty = BindableProperty.Create("IsClippedToBounds", typeof(bool), typeof(Layout), false);
 
 		public static readonly BindableProperty CascadeInputTransparentProperty = BindableProperty.Create(
@@ -360,23 +358,25 @@ namespace Xamarin.Forms
 			if (!s_relayoutInProgress)
 			{
 				s_relayoutInProgress = true;
-				Device.BeginInvokeOnMainThread(() =>
-				{
-					// if thread safety mattered we would need to lock this and compareexchange above
-					IList<KeyValuePair<Layout, int>> copy = s_resolutionList;
-					s_resolutionList = new List<KeyValuePair<Layout, int>>();
-					s_relayoutInProgress = false;
 
-					foreach (KeyValuePair<Layout, int> kvp in copy.OrderBy(kvp => kvp.Value))
+				// if thread safety mattered we would need to lock this and compareexchange above
+				IList<KeyValuePair<Layout, int>> copy = s_resolutionList;
+				s_resolutionList = new List<KeyValuePair<Layout, int>>();
+				s_relayoutInProgress = false;
+
+				foreach (KeyValuePair<Layout, int> kvp in copy.OrderBy(kvp => kvp.Value))
+				{
+					Layout layout = kvp.Key;
+					double width = layout.Width, height = layout.Height;
+					if (!layout._allocatedFlag && width >= 0 && height >= 0)
 					{
-						Layout layout = kvp.Key;
-						double width = layout.Width, height = layout.Height;
-						if (!layout._allocatedFlag && width >= 0 && height >= 0)
+						Device.BeginInvokeOnMainThread(() =>
 						{
 							layout.SizeAllocated(width, height);
-						}
+						}, layout.IdWindow);
 					}
-				}, idWindow);
+				}
+
 			}
 		}
 
