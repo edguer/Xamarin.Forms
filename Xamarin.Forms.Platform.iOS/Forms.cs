@@ -186,6 +186,11 @@ namespace Xamarin.Forms
 				NSRunLoop.Main.BeginInvokeOnMainThread(action.Invoke);
 			}
 
+			public void BeginInvokeOnMainThread(Action action, string idWindow)
+			{
+				NSRunLoop.Main.BeginInvokeOnMainThread(action.Invoke);
+			}
+
 			public Ticker CreateTicker()
 			{
 				return new CADisplayLinkTicker();

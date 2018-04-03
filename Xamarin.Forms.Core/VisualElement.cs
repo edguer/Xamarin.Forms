@@ -7,18 +7,6 @@ namespace Xamarin.Forms
 {
 	public partial class VisualElement : Element, IAnimatable, IVisualElementController, IResourcesProvider, IFlowDirectionController
 	{
-		private string _idWindow;
-		public string IdWindow
-		{
-			get
-			{
-				return _idWindow;
-			}
-			set
-			{
-				_idWindow = value;
-			}
-		}
 
 		internal static readonly BindablePropertyKey NavigationPropertyKey = BindableProperty.CreateReadOnly("Navigation", typeof(INavigation), typeof(VisualElement), default(INavigation));
 
@@ -680,8 +668,6 @@ namespace Xamarin.Forms
 		[Obsolete("OnSizeRequest is obsolete as of version 2.2.0. Please use OnMeasure instead.")]
 		protected virtual SizeRequest OnSizeRequest(double widthConstraint, double heightConstraint)
 		{
-			System.Diagnostics.Debug.WriteLine("Plataform.cs -> IPlatform.GetNativeSize" + IdWindow + "Currente view id: " + Platform.GetIdWindow());
-
 			if (Platform == null || !IsPlatformEnabled)
 			{
 				return new SizeRequest(new Size(-1, -1));

@@ -18,7 +18,7 @@ namespace Xamarin.Forms
 {
 	public static partial class Forms
 	{
-		public static ConcurrentDictionary<string, CoreApplicationView> Dispatchers = new ConcurrentDictionary<string, CoreApplicationView>();
+		public static ConcurrentDictionary<string, CoreDispatcher> Dispatchers = new ConcurrentDictionary<string, CoreDispatcher>();
 
 		public static CoreDispatcher window1;
 		public static CoreDispatcher window2;

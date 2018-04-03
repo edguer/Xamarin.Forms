@@ -11,7 +11,9 @@ namespace Xamarin.Forms
 {
 	public class Application : Element, IResourcesProvider, IApplicationController, IElementConfiguration<Application>
 	{
+		[ThreadStatic]
 		static Application s_current;
+
 		Task<IDictionary<string, object>> _propertiesTask;
 		readonly Lazy<PlatformConfigurationRegistry<Application>> _platformConfigurationRegistry;
 
@@ -21,16 +23,6 @@ namespace Xamarin.Forms
 
 		Page _mainPage;
 
-		string _idWindow;
-
-		public string IdWindow
-		{
-			get
-			{
-				return _idWindow;
-			}
-		}
-
 		static SemaphoreSlim SaveSemaphore = new SemaphoreSlim(1, 1);
 
 		public Application()
@@ -39,17 +31,16 @@ namespace Xamarin.Forms
 			if (f)
 				Loader.Load();
 			NavigationProxy = new NavigationImpl(this);
-			SetCurrentApplication(this);
+			//SetCurrentApplication(this);
+			IdWindow = Guid.NewGuid().ToString();
+
+			s_current = this;
 
 			SystemResources = DependencyService.Get<ISystemResourcesProvider>().GetSystemResources();
 			SystemResources.ValuesChanged += OnParentResourcesChanged;
 			_platformConfigurationRegistry = new Lazy<PlatformConfigurationRegistry<Application>>(() => new PlatformConfigurationRegistry<Application>(this));
 		}
 
-		public Application(string idWindow) : this()
-		{
-			this._idWindow = idWindow;
-		}
 		public void Quit()
 		{
 			Device.PlatformServices?.QuitApplication();
@@ -106,6 +97,9 @@ namespace Xamarin.Forms
 				if (_mainPage != null)
 				{
 					_mainPage.Parent = this;
+					_mainPage.IdWindow = this.IdWindow;
+					System.Diagnostics.Debug.WriteLine("1. Application -> MainPage: " + IdWindow);
+					System.Diagnostics.Debug.WriteLine("2. Application -> MainPage: " + _mainPage.IdWindow);
 					_mainPage.NavigationProxy.Inner = NavigationProxy;
 					InternalChildren.Add(_mainPage);
 				}
@@ -205,7 +199,7 @@ namespace Xamarin.Forms
 		{
 			if (Device.IsInvokeRequired)
 			{
-				Device.BeginInvokeOnMainThread(SaveProperties, _idWindow);
+				Device.BeginInvokeOnMainThread(SaveProperties, IdWindow);
 			}
 			else
 			{
@@ -213,12 +207,17 @@ namespace Xamarin.Forms
 			}
 		}
 
+		public void BeginInvokeOnMainThread(Action action)
+		{
+			Device.BeginInvokeOnMainThread(action, IdWindow);
+		}
+
 		// Don't use this unless there really is no better option
 		internal void SavePropertiesAsFireAndForget()
 		{
 			if (Device.IsInvokeRequired)
 			{
-				Device.BeginInvokeOnMainThread(SaveProperties, _idWindow);
+				Device.BeginInvokeOnMainThread(SaveProperties, IdWindow);
 			}
 			else
 			{
