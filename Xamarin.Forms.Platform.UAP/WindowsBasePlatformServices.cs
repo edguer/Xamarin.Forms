@@ -135,7 +135,7 @@ namespace Xamarin.Forms.Platform.UWP
 		public bool IsInvokeRequired => Forms.Dispatchers.Count == 1
 			? LockApplicationHost.GetForCurrentView() != null
 			? !CoreApplication.GetCurrentView().Dispatcher.HasThreadAccess
-			: !CoreApplication.MainView.CoreWindow.Dispatcher.HasThreadAccess : false;
+			: !CoreApplication.MainView.CoreWindow.Dispatcher.HasThreadAccess : true;
 
 		public string RuntimePlatform => Device.UWP;
 
