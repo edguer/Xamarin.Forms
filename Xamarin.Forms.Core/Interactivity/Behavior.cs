@@ -20,6 +20,9 @@ namespace Xamarin.Forms
 				throw new ArgumentNullException("bindable");
 			if (!AssociatedType.IsInstanceOfType(bindable))
 				throw new InvalidOperationException("bindable not an instance of AssociatedType");
+
+			ParentApplication = Application.Current;
+			WindowId = ParentApplication.WindowId;
 			OnAttachedTo(bindable);
 		}
 

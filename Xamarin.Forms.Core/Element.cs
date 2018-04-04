@@ -44,8 +44,6 @@ namespace Xamarin.Forms
 
 		Element _parentOverride;
 
-		Application _application;
-
 		IPlatform _platform;
 
 		string _styleId;
@@ -88,19 +86,6 @@ namespace Xamarin.Forms
 				if (!_id.HasValue)
 					_id = Guid.NewGuid();
 				return _id.Value;
-			}
-		}
-
-		private string _windowId;
-		public string WindowId
-		{
-			get
-			{
-				return String.IsNullOrEmpty(_windowId) ? _windowId = _application?.WindowId : _windowId;
-			}
-			set
-			{
-				_windowId = value;
 			}
 		}
 
@@ -378,11 +363,11 @@ namespace Xamarin.Forms
 
 		protected virtual void OnChildAdded(Element child)
 		{
-			_application = Application.Current;
-			WindowId = _application.WindowId;
+			ParentApplication = Application.Current;
+			WindowId = ParentApplication.WindowId;
 
-			child._application = _application;
-			child.WindowId = _application.WindowId;
+			child.ParentApplication = ParentApplication;
+			child.WindowId = ParentApplication.WindowId;
 
 			child.Parent = this;
 			if (Platform != null)

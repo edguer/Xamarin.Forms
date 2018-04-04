@@ -614,8 +614,16 @@ namespace Xamarin.Forms
 				BindableObject obj = null;
 				if (_expression._weakTarget.TryGetTarget(out obj))
 				{
-					VisualElement visualElement = obj as VisualElement;
-					idWindow = visualElement.WindowId;
+					if (obj is Element)
+					{
+						Element visualElement = obj as Element;
+						idWindow = visualElement.WindowId;
+					}
+					else if(obj is Behavior)
+					{
+						Behavior behavior = obj as Behavior;
+						idWindow = obj.WindowId;
+					}
 				}
 
 				Device.BeginInvokeOnMainThread(
