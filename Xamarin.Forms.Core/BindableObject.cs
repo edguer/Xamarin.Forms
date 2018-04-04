@@ -10,6 +10,21 @@ namespace Xamarin.Forms
 {
 	public abstract class BindableObject : INotifyPropertyChanged, IDynamicResourceHandler
 	{
+		public Application ParentApplication { get; internal set; }
+
+		private string _windowId;
+		public string WindowId
+		{
+			get
+			{
+				return String.IsNullOrEmpty(_windowId) ? _windowId = ParentApplication?.WindowId : _windowId;
+			}
+			set
+			{
+				_windowId = value;
+			}
+		}
+
 		public static readonly BindableProperty BindingContextProperty =
 			BindableProperty.Create("BindingContext", typeof(object), typeof(BindableObject), default(object),
 									BindingMode.OneWay, null, BindingContextPropertyChanged, null, null, BindingContextPropertyBindingChanging);
