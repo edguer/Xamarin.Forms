@@ -30,6 +30,8 @@ namespace Xamarin.Forms
 	{
 		public static bool IsInitialized { get; private set; }
 
+		public static Dictionary<string, Application> ApplicationList = new Dictionary<string, Application>();
+
 #if __MOBILE__
 		static bool? s_isiOS9OrNewer;
 		static bool? s_isiOS10OrNewer;
@@ -112,6 +114,16 @@ namespace Xamarin.Forms
 		internal static void SendViewInitialized(this VisualElement self, TNativeView nativeView)
 		{
 			ViewInitialized?.Invoke(self, new ViewInitializedEventArgs { View = self, NativeView = nativeView });
+		}
+
+		public static Application GetApplication(string WindowId)
+		{
+			if (ApplicationList.TryGetValue(WindowId, out Application app))
+			{
+				return app;
+			}
+
+			return null;
 		}
 
 		class iOSExpressionSearch : ExpressionVisitor, IExpressionSearch
