@@ -32,6 +32,8 @@ namespace Xamarin.Forms
 			var f = false;
 			if (f)
 				Loader.Load();
+
+            SetCurrentApplication(this);
 			NavigationProxy = new NavigationImpl(this);
 			WindowId = Guid.NewGuid().ToString();
 
