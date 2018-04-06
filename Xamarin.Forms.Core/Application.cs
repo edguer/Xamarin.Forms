@@ -31,10 +31,7 @@ namespace Xamarin.Forms
 			if (f)
 				Loader.Load();
 			NavigationProxy = new NavigationImpl(this);
-			//SetCurrentApplication(this);
 			WindowId = Guid.NewGuid().ToString();
-
-			s_current = this;
 
 			SystemResources = DependencyService.Get<ISystemResourcesProvider>().GetSystemResources();
 			SystemResources.ValuesChanged += OnParentResourcesChanged;
@@ -97,11 +94,26 @@ namespace Xamarin.Forms
 				if (_mainPage != null)
 				{
 					_mainPage.Parent = this;
+					_mainPage.ParentApplication = this;
 					_mainPage.WindowId = this.WindowId;
 					_mainPage.NavigationProxy.Inner = NavigationProxy;
 					InternalChildren.Add(_mainPage);
+
+					if (Application.Current == null)
+						UpdateWindowIdOnChildren(_mainPage);
 				}
 				OnPropertyChanged();
+			}
+		}
+
+		private void UpdateWindowIdOnChildren(Element element)
+		{
+			for (int i = 0; i < element.LogicalChildren.Count; i++)
+			{
+				element.LogicalChildren[i].WindowId = this.WindowId;
+				element.LogicalChildren[i].ParentApplication = this;
+
+				UpdateWindowIdOnChildren(element.LogicalChildren[i]);
 			}
 		}
 

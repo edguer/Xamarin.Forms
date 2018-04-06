@@ -26,10 +26,15 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (application == null)
 				throw new ArgumentNullException(nameof(application));
 
-			Application.SetCurrentApplication(application);
-			_application = application;
 
+			SaveApplicarion(application);
+			_application = application;
 			application.PropertyChanged += ApplicationOnPropertyChanged;
+		}
+
+		public void SaveApplicarion(Application application)
+		{
+			Forms.ApplicationList.Add(application.WindowId, application);
 		}
 
 		public override void DidFinishLaunching(Foundation.NSNotification notification)
@@ -112,7 +117,7 @@ namespace Xamarin.Forms.Platform.MacOS
 				Log.Warning("FormsApplicationDelegate", "Please provide a Main.storyboard to handle menus");
 				return;
 			}
-				
+
 			ClearNSMenu(nsMenu);
 			Element.GetMenu(_application).ToNSMenu(nsMenu);
 		}
