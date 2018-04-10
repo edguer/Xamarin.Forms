@@ -29,7 +29,6 @@ namespace Xamarin.Forms.Platform.UWP
 				throw new ArgumentNullException("application");
 
 			SaveDispatcher(application);
-			Application.SetCurrentApplication(application);
 			this.Application = application;
 			Platform = CreatePlatform();
 			Platform.SetPage(application.MainPage, application);
