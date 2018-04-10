@@ -14,8 +14,6 @@ namespace Xamarin.Forms
 		[ThreadStatic]
 		static Application s_current;
 
-        public static bool PopulateWindowIdAfterPageRendering = false;
-
 		Task<IDictionary<string, object>> _propertiesTask;
 		readonly Lazy<PlatformConfigurationRegistry<Application>> _platformConfigurationRegistry;
 
@@ -102,22 +100,8 @@ namespace Xamarin.Forms
 					_mainPage.WindowId = this.WindowId;
 					_mainPage.NavigationProxy.Inner = NavigationProxy;
 					InternalChildren.Add(_mainPage);
-
-					if (PopulateWindowIdAfterPageRendering)
-				        UpdateWindowIdOnChildren(_mainPage);
 				}
 				OnPropertyChanged();
-			}
-		}
-
-		private void UpdateWindowIdOnChildren(Element element)
-		{
-			for (int i = 0; i < element.LogicalChildren.Count; i++)
-			{
-				element.LogicalChildren[i].WindowId = this.WindowId;
-				element.LogicalChildren[i].ParentApplication = this;
-
-				UpdateWindowIdOnChildren(element.LogicalChildren[i]);
 			}
 		}
 
