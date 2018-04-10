@@ -26,15 +26,8 @@ namespace Xamarin.Forms.Platform.MacOS
 			if (application == null)
 				throw new ArgumentNullException(nameof(application));
 
-
-			SaveApplicarion(application);
 			_application = application;
-			application.PropertyChanged += ApplicationOnPropertyChanged;
-		}
-
-		public void SaveApplicarion(Application application)
-		{
-			Forms.ApplicationList.Add(application.WindowId, application);
+			application.PropertyChanged += ApplicationOnPropertyChanged; 
 		}
 
 		public override void DidFinishLaunching(Foundation.NSNotification notification)
