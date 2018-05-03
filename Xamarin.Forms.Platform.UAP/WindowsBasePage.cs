@@ -29,7 +29,7 @@ namespace Xamarin.Forms.Platform.UWP
 
 			_application = application;
 			RegisterDispatcher(_application);
-			Application.SetCurrentApplication(application);
+			Application.SetCurrentApplication(_application);
 			Platform = CreatePlatform();
 			Platform.SetPage(_application.MainPage);
 			application.PropertyChanged += OnApplicationPropertyChanged;
@@ -50,15 +50,19 @@ namespace Xamarin.Forms.Platform.UWP
 
 		void OnApplicationResuming(object sender, object e)
 		{
-			_application.SendResume();
+			_application?.SendResume();
 		}
 
 		async void OnApplicationSuspending(object sender, SuspendingEventArgs e)
 		{
+			var sendSleepTask = Application.Current?.SendSleepAsync();
+			if (sendSleepTask == null)
+				return;
+
 			SuspendingDeferral deferral = e.SuspendingOperation.GetDeferral();
 			try
 			{
-				await _application.SendSleepAsync();
+				await sendSleepTask;
 			}
 			finally
 			{
