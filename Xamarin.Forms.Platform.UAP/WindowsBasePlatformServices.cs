@@ -47,7 +47,7 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 			else
 			{
-				throw new Exception("Unable to locate the dispatcher for the informed Window.");
+				this.BeginInvokeOnMainThread(action);
 			}
 		}
 
