@@ -1,6 +1,7 @@
 @echo off
 rem stub uncommon targets
-set NUGET_EXE=%NUGET_DIR%NuGet.exe
+set NUGET_DIR="C:\"
+set NUGET_EXE=%NUGET_DIR%nuget.exe
 mkdir Xamarin.Forms.Platform.Tizen\bin\release\tizen40\
 echo foo > Xamarin.Forms.Platform.Tizen\bin\release\tizen40\Xamarin.forms.Platform.tizen.dll
 echo foo > Xamarin.Forms.Platform.Tizen\bin\release\tizen40\Xamarin.forms.Platform.dll
@@ -16,9 +17,9 @@ pushd docs
 ..\tools\mdoc\mdoc.exe export-msxdoc -o Xamarin.Forms.Maps.xml Xamarin.Forms.Maps
 popd
 pushd .nuspec
-%NUGET_EXE% pack Xamarin.Forms.nuspec -properties configuration=release;platform=anycpu -Version 0.12.%DEBUG_VERSION%
+%NUGET_EXE% pack Xamarin.Forms.nuspec -properties configuration=release;platform=anycpu -Version 9.9.%DEBUG_VERSION%
 if "%CREATE_MAP_NUGET%" NEQ "" (
 REM Requires building x86, x64, AMD
-	%NUGET_EXE% pack Xamarin.Forms.Maps.nuspec -properties configuration=debug;platform=anycpu -Version 0.12.%DEBUG_VERSION%
+	%NUGET_EXE% pack Xamarin.Forms.Maps.nuspec -properties configuration=debug;platform=anycpu -Version 9.9.%DEBUG_VERSION%
 )
 popd
