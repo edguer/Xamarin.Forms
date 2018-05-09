@@ -409,11 +409,6 @@ namespace Xamarin.Forms
 				BeginInvokeOnMainThread(action);
 			}
 
-			public void BeginInvokeOnMainThread(Action action, BindableObject bindableObject)
-			{
-				BeginInvokeOnMainThread(action);
-			}
-
 			public Ticker CreateTicker()
 			{
 				return new AndroidTicker();

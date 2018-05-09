@@ -13,7 +13,7 @@ namespace Xamarin.Forms
 
 		public static readonly BindableProperty InputTransparentProperty = BindableProperty.Create("InputTransparent", typeof(bool), typeof(VisualElement), default(bool));
 
-		public static readonly BindableProperty IsEnabledProperty = BindableProperty.Create("IsEnabled", typeof(bool), 
+		public static readonly BindableProperty IsEnabledProperty = BindableProperty.Create("IsEnabled", typeof(bool),
 			typeof(VisualElement), true, propertyChanged: OnIsEnabledPropertyChanged);
 
 		static readonly BindablePropertyKey XPropertyKey = BindableProperty.CreateReadOnly("X", typeof(double), typeof(VisualElement), default(double));
@@ -89,7 +89,7 @@ namespace Xamarin.Forms
 		public static readonly BindableProperty MinimumHeightRequestProperty = BindableProperty.Create("MinimumHeightRequest", typeof(double), typeof(VisualElement), -1d, propertyChanged: OnRequestChanged);
 
 		[EditorBrowsable(EditorBrowsableState.Never)]
-		public static readonly BindablePropertyKey IsFocusedPropertyKey = BindableProperty.CreateReadOnly("IsFocused", 
+		public static readonly BindablePropertyKey IsFocusedPropertyKey = BindableProperty.CreateReadOnly("IsFocused",
 			typeof(bool), typeof(VisualElement), default(bool), propertyChanged: OnIsFocusedPropertyChanged);
 
 		public static readonly BindableProperty IsFocusedProperty = IsFocusedPropertyKey.BindableProperty;
@@ -278,15 +278,17 @@ namespace Xamarin.Forms
 			set { SetValue(StyleProperty, value); }
 		}
 
-		
+
 		[TypeConverter(typeof(ListStringTypeConverter))]
-		public IList<string> StyleClass {
+		public IList<string> StyleClass
+		{
 			get { return @class; }
 			set { @class = value; }
 		}
 
 		[TypeConverter(typeof(ListStringTypeConverter))]
-		public IList<string> @class {
+		public IList<string> @class
+		{
 			get { return _mergedStyle.StyleClass; }
 			set { _mergedStyle.StyleClass = value; }
 		}
@@ -420,6 +422,20 @@ namespace Xamarin.Forms
 			get { return Navigation as NavigationProxy; }
 		}
 
+
+		VisualElementDispatcher _dispatcher;
+
+		public VisualElementDispatcher Dispatcher
+		{
+			get
+			{
+				if (_dispatcher == null)
+					_dispatcher = new VisualElementDispatcher(WindowId);
+
+				return _dispatcher;
+			}
+		}
+
 		internal LayoutConstraint SelfConstraint
 		{
 			get { return _selfConstraint; }
@@ -455,7 +471,8 @@ namespace Xamarin.Forms
 
 		public ResourceDictionary Resources
 		{
-			get {
+			get
+			{
 				if (_resources != null)
 					return _resources;
 				_resources = new ResourceDictionary();
@@ -814,8 +831,8 @@ namespace Xamarin.Forms
 
 			var isEnabled = (bool)newValue;
 
-			VisualStateManager.GoToState(element, isEnabled 
-				? VisualStateManager.CommonStates.Normal 
+			VisualStateManager.GoToState(element, isEnabled
+				? VisualStateManager.CommonStates.Normal
 				: VisualStateManager.CommonStates.Disabled);
 		}
 
@@ -903,7 +920,8 @@ namespace Xamarin.Forms
 		{
 			public override object ConvertFromInvariantString(string value)
 			{
-				if (value != null) {
+				if (value != null)
+				{
 					if (value.Equals("true", StringComparison.OrdinalIgnoreCase))
 						return true;
 					if (value.Equals("visible", StringComparison.OrdinalIgnoreCase))

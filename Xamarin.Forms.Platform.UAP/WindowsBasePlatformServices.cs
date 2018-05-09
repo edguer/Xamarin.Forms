@@ -47,15 +47,10 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 			else
 			{
-				throw new Exception("Unable to locate the dispatcher for the informed Window.");
+				_dispatcher.RunAsync(CoreDispatcherPriority.Normal, () => action()).WatchForError();
 			}
 		}
-
-		public void BeginInvokeOnMainThread(Action action, BindableObject bindableObject)
-		{
-			this.BeginInvokeOnMainThread(action, bindableObject.WindowId);
-		}
-
+		
 		public Ticker CreateTicker()
 		{
 			return new WindowsTicker();

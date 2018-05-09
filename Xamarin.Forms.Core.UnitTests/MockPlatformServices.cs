@@ -98,14 +98,6 @@ namespace Xamarin.Forms.Core.UnitTests
 				invokeOnMainThread(action);
 		}
 
-		public void BeginInvokeOnMainThread(Action action, BindableObject bindableObject)
-		{
-			if (invokeOnMainThread == null)
-				action();
-			else
-				invokeOnMainThread(action);
-		}
-
 		public Internals.Ticker CreateTicker()
 		{
 			return new MockTicker();
