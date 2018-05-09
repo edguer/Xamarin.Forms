@@ -98,7 +98,6 @@ namespace Xamarin.Forms
 			Flags = flags;
 		}
 
-		[Obsolete("Device.BeginInvokeOnMainThread is obsolete as of version 3.2.0 Use VisualElement.Dispacher.BeginInvokeOnMainThread Instead.")]
 		public static void BeginInvokeOnMainThread(Action action)
 		{
 			PlatformServices.BeginInvokeOnMainThread(action);
