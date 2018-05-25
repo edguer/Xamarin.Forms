@@ -106,6 +106,11 @@ namespace Xamarin.Forms.Platform.Tizen
 			BeginInvokeOnMainThread(action);
 		}
 
+		public void BeginInvokeOnMainThread(Action action, Guid windowId, int priority)
+		{
+			BeginInvokeOnMainThread(action);
+		}
+
 		public Ticker CreateTicker()
 		{
 			return new TizenTicker();

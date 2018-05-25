@@ -376,7 +376,7 @@ namespace Xamarin.Forms
 							Device.BeginInvokeOnMainThread(() =>
 							{
 								layout.SizeAllocated(width, height);
-							}, layout.WindowId);
+							}, layout.WindowId, layout.Priority);
 						}
 					}
 

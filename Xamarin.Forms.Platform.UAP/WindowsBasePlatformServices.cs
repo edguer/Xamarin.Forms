@@ -47,7 +47,38 @@ namespace Xamarin.Forms.Platform.UWP
 			}
 			else
 			{
-				throw new Exception("Unable to locate the dispatcher for the informed Window.");
+				BeginInvokeOnMainThread(action);
+			}
+		}
+
+		public void BeginInvokeOnMainThread(Action action, Guid windowId, int priority)
+		{
+			if (Forms.Dispatchers.TryGetValue(windowId, out CoreDispatcher dispatcher))
+			{
+
+				CoreDispatcherPriority p = CoreDispatcherPriority.Normal;
+
+				switch (priority)
+				{
+					case 0:
+						p = CoreDispatcherPriority.High;
+						break;
+					case 2:
+						p = CoreDispatcherPriority.Low;
+						break;
+					case 3:
+						p = CoreDispatcherPriority.Idle;
+						break;
+					default:
+						p = CoreDispatcherPriority.Normal;
+						break;
+				}
+
+				dispatcher.RunAsync(p, () => action()).WatchForError();
+			}
+			else
+			{
+				BeginInvokeOnMainThread(action);
 			}
 		}
 

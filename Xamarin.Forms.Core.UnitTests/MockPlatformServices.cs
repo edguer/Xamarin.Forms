@@ -106,6 +106,11 @@ namespace Xamarin.Forms.Core.UnitTests
 				invokeOnMainThread(action);
 		}
 
+		public void BeginInvokeOnMainThread(Action action, Guid windowId, int priority)
+		{
+			BeginInvokeOnMainThread(action);
+		}
+
 		public Internals.Ticker CreateTicker()
 		{
 			return new MockTicker();

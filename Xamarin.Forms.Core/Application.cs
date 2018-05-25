@@ -194,7 +194,7 @@ namespace Xamarin.Forms
 		{
 			if (Device.IsInvokeRequired)
 			{
-				Device.BeginInvokeOnMainThread(SaveProperties, this.WindowId);
+				Device.BeginInvokeOnMainThread(SaveProperties, this.WindowId, this.Priority);
 			}
 			else
 			{
@@ -207,7 +207,7 @@ namespace Xamarin.Forms
 		{
 			if (Device.IsInvokeRequired)
 			{
-				Device.BeginInvokeOnMainThread(SaveProperties, this.WindowId);
+				Device.BeginInvokeOnMainThread(SaveProperties, this.WindowId, this.Priority);
 			}
 			else
 			{

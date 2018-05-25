@@ -43,6 +43,11 @@ namespace Xamarin.Forms.Platform.WPF
 			BeginInvokeOnMainThread(action);
 		}
 
+		public void BeginInvokeOnMainThread(Action action, Guid windowId, int priority)
+		{
+			BeginInvokeOnMainThread(action);
+		}
+
 		public Ticker CreateTicker()
 		{
 			return new WPFTicker();

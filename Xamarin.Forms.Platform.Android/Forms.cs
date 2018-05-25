@@ -414,6 +414,11 @@ namespace Xamarin.Forms
 				BeginInvokeOnMainThread(action);
 			}
 
+			public void BeginInvokeOnMainThread(Action action, Guid windowId, int priority)
+			{
+				BeginInvokeOnMainThread(action);
+			}
+
 			public Ticker CreateTicker()
 			{
 				return new AndroidTicker();

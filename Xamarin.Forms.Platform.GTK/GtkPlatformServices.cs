@@ -33,6 +33,11 @@ namespace Xamarin.Forms.Platform.GTK
 			BeginInvokeOnMainThread(action);
 		}
 
+		public void BeginInvokeOnMainThread(Action action, Guid windowId, int priority)
+		{
+			BeginInvokeOnMainThread(action);
+		}
+
 		public Ticker CreateTicker()
         {
             return new GtkTicker();

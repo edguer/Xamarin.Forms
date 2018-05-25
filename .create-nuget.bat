@@ -19,7 +19,7 @@ pushd docs
 ..\tools\mdoc\mdoc.exe export-msxdoc -o Xamarin.Forms.Maps.xml Xamarin.Forms.Maps
 popd
 pushd .nuspec
-%NUGET_EXE% pack Xamarin.Forms.nuspec -properties configuration=debug;platform=anycpu -Version 9.9.%DEBUG_VERSION%
+C:\nuget.exe pack Xamarin.Forms.nuspec -properties configuration=debug;platform=anycpu -Version 9.9.9-prerelease
 if "%CREATE_MAP_NUGET%" NEQ "" (
 REM Requires building x86, x64, AMD
 	%NUGET_EXE% pack Xamarin.Forms.Maps.nuspec -properties configuration=debug;platform=anycpu -Version 9.9.%DEBUG_VERSION%

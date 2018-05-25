@@ -14,12 +14,21 @@ namespace Xamarin.Forms
 			BindableProperty.Create("BindingContext", typeof(object), typeof(BindableObject), default(object),
 									BindingMode.OneWay, null, BindingContextPropertyChanged, null, null, BindingContextPropertyBindingChanging);
 
+		public static readonly BindableProperty PriorityProperty =
+			BindableProperty.Create("Priority", typeof(int), typeof(BindableObject), 1);
+
 		readonly List<BindablePropertyContext> _properties = new List<BindablePropertyContext>(4);
 
 		bool _applying;
 		object _inheritedContext;
 
 		public Guid WindowId { get; set; }
+
+		public int Priority
+		{
+			get { return (int)GetValue(PriorityProperty); }
+			set { SetValue(PriorityProperty, value); }
+		}
 
 		public object BindingContext
 		{
@@ -51,7 +60,7 @@ namespace Xamarin.Forms
 			if (propertyKey == null)
 				throw new ArgumentNullException("propertyKey");
 
-			ClearValue(propertyKey.BindableProperty, fromStyle:false, checkAccess: false);
+			ClearValue(propertyKey.BindableProperty, fromStyle: false, checkAccess: false);
 		}
 
 		public bool IsSet(BindableProperty targetProperty)
@@ -134,7 +143,7 @@ namespace Xamarin.Forms
 				bindable._inheritedContext = value;
 			}
 
-			bindable.ApplyBindings(skipBindingContext:false, fromBindingContextChanged:true);
+			bindable.ApplyBindings(skipBindingContext: false, fromBindingContextChanged: true);
 			bindable.OnBindingContextChanged();
 		}
 
@@ -156,8 +165,9 @@ namespace Xamarin.Forms
 
 		protected void UnapplyBindings()
 		{
-			for (int i = 0, _propertiesCount = _properties.Count; i < _propertiesCount; i++) {
-				BindablePropertyContext context = _properties [i];
+			for (int i = 0, _propertiesCount = _properties.Count; i < _propertiesCount; i++)
+			{
+				BindablePropertyContext context = _properties[i];
 				if (context.Binding == null)
 					continue;
 
@@ -249,14 +259,16 @@ namespace Xamarin.Forms
 		internal object[] GetValues(params BindableProperty[] properties)
 		{
 			var values = new object[properties.Length];
-			for (var i = 0; i < _properties.Count; i++) {
+			for (var i = 0; i < _properties.Count; i++)
+			{
 				var context = _properties[i];
 				var index = properties.IndexOf(context.Property);
 				if (index < 0)
 					continue;
 				values[index] = context.Value;
 			}
-			for (var i = 0; i < values.Length; i++) {
+			for (var i = 0; i < values.Length; i++)
+			{
 				if (!ReferenceEquals(values[i], null))
 					continue;
 				values[i] = properties[i].DefaultValueCreator == null ? properties[i].DefaultValue : CreateAndAddContext(properties[i]).Value;
@@ -393,10 +405,12 @@ namespace Xamarin.Forms
 				value = property.CoerceValue(this, value);
 
 			BindablePropertyContext context = GetOrCreateContext(property);
-			if (manuallySet) {
+			if (manuallySet)
+			{
 				context.Attributes |= BindableContextAttributes.IsManuallySet;
 				context.Attributes &= ~BindableContextAttributes.IsSetFromStyle;
-			} else
+			}
+			else
 				context.Attributes &= ~BindableContextAttributes.IsManuallySet;
 
 			if (fromStyle)
@@ -437,8 +451,9 @@ namespace Xamarin.Forms
 		internal void ApplyBindings(bool skipBindingContext, bool fromBindingContextChanged)
 		{
 			var prop = _properties.ToArray();
-			for (int i = 0, propLength = prop.Length; i < propLength; i++) {
-				BindablePropertyContext context = prop [i];
+			for (int i = 0, propLength = prop.Length; i < propLength; i++)
+			{
+				BindablePropertyContext context = prop[i];
 				BindingBase binding = context.Binding;
 				if (binding == null)
 					continue;
@@ -466,7 +481,7 @@ namespace Xamarin.Forms
 		static void BindingContextPropertyChanged(BindableObject bindable, object oldvalue, object newvalue)
 		{
 			bindable._inheritedContext = null;
-			bindable.ApplyBindings(skipBindingContext: true, fromBindingContextChanged:true);
+			bindable.ApplyBindings(skipBindingContext: true, fromBindingContextChanged: true);
 			bindable.OnBindingContextChanged();
 		}
 

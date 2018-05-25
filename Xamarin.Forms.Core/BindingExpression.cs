@@ -610,12 +610,14 @@ namespace Xamarin.Forms
 				}
 
 				Guid windowId = Guid.Empty;
+				int priority = 1;
 				if (_expression._weakTarget.TryGetTarget(out BindableObject obj))
 				{
 					windowId = obj.WindowId;
+					priority = obj.Priority;
 				}
 
-				Device.BeginInvokeOnMainThread(() => _expression.Apply(), windowId);
+				Device.BeginInvokeOnMainThread(() => _expression.Apply(), windowId, priority);
 
 			}
 
