@@ -1,12 +1,12 @@
 @echo off
 rem stub uncommon targets
 set NUGET_EXE=%NUGET_DIR%NuGet.exe
-mkdir Xamarin.Forms.Platform.MacOS\bin\debug\
-mkdir Xamarin.Forms.Platform.Tizen\bin\debug\tizen40\
-echo foo > Xamarin.Forms.Platform.MacOS\bin\debug\Xamarin.forms.Platform.macOS.dll
-echo foo > Xamarin.Forms.Platform.MacOS\bin\debug\Xamarin.forms.Platform.dll
-echo foo > Xamarin.Forms.Platform.Tizen\bin\debug\tizen40\Xamarin.forms.Platform.tizen.dll
-echo foo > Xamarin.Forms.Platform.Tizen\bin\debug\tizen40\Xamarin.forms.Platform.dll
+mkdir Xamarin.Forms.Platform.MacOS\bin\release\
+mkdir Xamarin.Forms.Platform.Tizen\bin\release\tizen40\
+echo foo > Xamarin.Forms.Platform.MacOS\bin\release\Xamarin.forms.Platform.macOS.dll
+echo foo > Xamarin.Forms.Platform.MacOS\bin\release\Xamarin.forms.Platform.dll
+echo foo > Xamarin.Forms.Platform.Tizen\bin\release\tizen40\Xamarin.forms.Platform.tizen.dll
+echo foo > Xamarin.Forms.Platform.Tizen\bin\release\tizen40\Xamarin.forms.Platform.dll
 if "%1" NEQ "" (
    %NUGET_EXE% restore .xamarin.forms.sln
    msbuild /v:m /p:platform="any cpu" .xamarin.forms.sln
@@ -19,7 +19,7 @@ pushd docs
 ..\tools\mdoc\mdoc.exe export-msxdoc -o Xamarin.Forms.Maps.xml Xamarin.Forms.Maps
 popd
 pushd .nuspec
-C:\nuget.exe pack Xamarin.Forms.nuspec -properties configuration=debug;platform=anycpu -Version 9.9.9-prerelease
+C:\nuget.exe pack Xamarin.Forms.nuspec -properties configuration=release;platform=anycpu -Version 9.9.13
 if "%CREATE_MAP_NUGET%" NEQ "" (
 REM Requires building x86, x64, AMD
 	%NUGET_EXE% pack Xamarin.Forms.Maps.nuspec -properties configuration=debug;platform=anycpu -Version 9.9.%DEBUG_VERSION%
