@@ -543,6 +543,7 @@ namespace Xamarin.Forms.Xaml
 			value = null;
 			var elementType = element.GetType();
 			PropertyInfo propertyInfo = null;
+#if NETSTANDARD1_0
 			try {
 				propertyInfo = elementType.GetRuntimeProperty(localName);
 			} catch (AmbiguousMatchException) {
@@ -552,6 +553,13 @@ namespace Xamarin.Forms.Xaml
 						propertyInfo = property;
 				}
 			}
+#else
+			while (elementType != null && propertyInfo == null)
+			{
+				propertyInfo = elementType.GetProperty(localName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
+				elementType = elementType.BaseType;
+			}
+#endif
 			MethodInfo getter;
 			targetProperty = propertyInfo;
 			if (propertyInfo == null || !propertyInfo.CanRead || (getter = propertyInfo.GetMethod) == null)
