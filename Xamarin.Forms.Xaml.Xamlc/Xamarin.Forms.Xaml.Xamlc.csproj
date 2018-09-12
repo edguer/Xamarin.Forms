@@ -6,7 +6,7 @@
     <ProjectGuid>{928A23F3-2330-4F9F-B6A3-BFE01FE2A2DF}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <RootNamespace>Xamarin.Forms.Xaml</RootNamespace>
-    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <TargetFrameworkProfile />
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>

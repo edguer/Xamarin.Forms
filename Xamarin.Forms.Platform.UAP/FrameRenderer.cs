@@ -61,8 +61,12 @@ namespace Xamarin.Forms.Platform.UWP
 			if (Element.Content == null)
 				return;
 
-			IVisualElementRenderer renderer = Element.Content.GetOrCreateRenderer();
-			Control.Child = renderer.ContainerElement;
+			if (Control.Child == null)
+			{
+				IVisualElementRenderer renderer = Element.Content.GetOrCreateRenderer();
+				Control.Child = renderer.ContainerElement;
+			}
+
 		}
 
 		void UpdateBorder()

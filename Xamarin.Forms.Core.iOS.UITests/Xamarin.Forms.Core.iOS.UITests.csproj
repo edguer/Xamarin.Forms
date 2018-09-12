@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Xamarin.Forms.Core.UITests</RootNamespace>
     <AssemblyName>Xamarin.Forms.Core.iOS.UITests</AssemblyName>
-    <TargetFrameworkVersion>v4.7</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
@@ -99,7 +99,7 @@
   <Import Project="..\Xamarin.Forms.Controls.Issues\Xamarin.Forms.Controls.Issues.Shared\Xamarin.Forms.Controls.Issues.Shared.projitems" Label="Shared" />
   <Import Project="..\Xamarin.Forms.Core.UITests.Shared\Xamarin.Forms.Core.UITests.projitems" Label="Shared" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="AfterBuild">  
-     <Delete Files="bin/$(Configuration)/System.Net.Http.dll" /> 
-  </Target> 
+  <Target Name="AfterBuild">
+    <Delete Files="bin/$(Configuration)/System.Net.Http.dll" />
+  </Target>
 </Project>
