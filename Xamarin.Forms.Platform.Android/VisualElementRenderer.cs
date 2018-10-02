@@ -21,7 +21,7 @@ namespace Xamarin.Forms.Platform.Android
 		string _defaultContentDescription;
 		bool? _defaultFocusable;
 		string _defaultHint;
-		bool _inputTransparentInherited = true;
+		bool _cascadeInputTransparent = true;
 
 		VisualElementPackager _packager;
 		PropertyChangedEventHandler _propertyChangeHandler;
@@ -52,7 +52,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public override bool DispatchTouchEvent(MotionEvent e)
 		{
-			if (InputTransparent && _inputTransparentInherited)
+			if (InputTransparent && _cascadeInputTransparent)
 			{
 				// If the Element is InputTransparent, this ViewGroup will be marked InputTransparent
 				// If we're InputTransparent and our transparency should be applied to our child controls,
@@ -130,8 +130,7 @@ namespace Xamarin.Forms.Platform.Android
 
 		public void UpdateLayout()
 		{
-			var reference = Guid.NewGuid().ToString();
-			Performance.Start(reference);
+			Performance.Start(out string reference);
 			Tracker?.UpdateLayout();
 			Performance.Stop(reference);
 		}
@@ -239,8 +238,6 @@ namespace Xamarin.Forms.Platform.Android
 					}
 				}
 
-				RemoveAllViews();
-
 				if (Element != null)
 				{
 					Element.PropertyChanged -= _propertyChangeHandler;
@@ -340,7 +337,7 @@ namespace Xamarin.Forms.Platform.Android
 				return;
 			}
 
-			_inputTransparentInherited = layout.CascadeInputTransparent;
+			_cascadeInputTransparent = layout.CascadeInputTransparent;
 		}
 
 		protected void SetPackager(VisualElementPackager packager)

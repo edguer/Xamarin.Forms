@@ -55,6 +55,10 @@ namespace Xamarin.Forms.Platform.UWP
 
 		async void OnApplicationSuspending(object sender, SuspendingEventArgs e)
 		{
+			var sendSleepTask = Application.Current?.SendSleepAsync();
+			if (sendSleepTask == null)
+				return;
+
 			SuspendingDeferral deferral = e.SuspendingOperation.GetDeferral();
 			try
 			{

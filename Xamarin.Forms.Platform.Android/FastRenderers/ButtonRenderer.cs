@@ -14,7 +14,7 @@ using static System.String;
 namespace Xamarin.Forms.Platform.Android.FastRenderers
 {
 	internal sealed class ButtonRenderer : AppCompatButton, IVisualElementRenderer, AView.IOnAttachStateChangeListener,
-		AView.IOnFocusChangeListener, IEffectControlProvider, AView.IOnClickListener, AView.IOnTouchListener
+		AView.IOnFocusChangeListener, IEffectControlProvider, AView.IOnClickListener, AView.IOnTouchListener, IViewRenderer
 	{
 		float _defaultFontSize;
 		int? _defaultLabelFor;
@@ -27,6 +27,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		readonly EffectControlProvider _effectControlProvider;
 		VisualElementTracker _tracker;
 		ButtonBackgroundTracker _backgroundTracker;
+		Thickness _paddingDeltaPix = new Thickness();
 
 		public event EventHandler<VisualElementChangedEventArgs> ElementChanged;
 		public event EventHandler<PropertyChangedEventArgs> ElementPropertyChanged;
@@ -44,7 +45,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 		{
 			_automationPropertiesProvider = new AutomationPropertiesProvider(this);
 			_effectControlProvider = new EffectControlProvider(this);
-			
+
 			Initialize();
 		}
 
@@ -122,8 +123,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			VisualElement oldElement = Button;
 			Button = (Button)element;
 
-			var reference = Guid.NewGuid().ToString();
-			Performance.Start(reference);
+			Performance.Start(out string reference);
 
 			if (oldElement != null)
 			{
@@ -174,6 +174,11 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			_tracker?.UpdateLayout();
 		}
 
+		void IViewRenderer.MeasureExactly()
+		{
+			ViewRenderer.MeasureExactly(this, Element, Context);
+		}
+
 		protected override void Dispose(bool disposing)
 		{
 			if (_isDisposed)
@@ -193,6 +198,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				_tracker?.Dispose();
 
 				_backgroundTracker?.Dispose();
+				_backgroundTracker = null;
 
 				if (Element != null)
 				{
@@ -239,7 +245,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				UpdateIsEnabled();
 				UpdateInputTransparent();
 				UpdateBackgroundColor();
-				UpdateDrawable();
+				UpdatePadding();
 
 				ElevationHelper.SetElevation(this, e.NewElement);
 			}
@@ -277,6 +283,10 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			{
 				UpdateInputTransparent();
 			}
+			else if (e.PropertyName == Button.PaddingProperty.PropertyName)
+			{
+				UpdatePadding();
+			}
 
 			ElementPropertyChanged?.Invoke(this, e);
 		}
@@ -292,9 +302,13 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			{
 				// We've got an image (and no text); it's already centered horizontally,
 				// we just need to adjust the padding so it centers vertically
-				int diff = (b - t - _imageHeight) / 2;
+				var diff = ((b - Context.ToPixels(Button.Padding.Bottom + Button.Padding.Top)) - t - _imageHeight) / 2;
 				diff = Math.Max(diff, 0);
-				SetPadding(0, diff, 0, -diff);
+				UpdateContentEdge(new Thickness(0, diff, 0, -diff));
+			}
+			else
+			{
+				UpdateContentEdge();
 			}
 
 			base.OnLayout(changed, l, t, r, b);
@@ -307,7 +321,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 
 		void UpdateBackgroundColor()
 		{
-			_backgroundTracker?.UpdateBackgroundColor();
+			_backgroundTracker?.UpdateDrawable();
 		}
 
 		internal void OnNativeFocusChanged(bool hasFocus)
@@ -357,7 +371,7 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 				// to handle the vertical centering 
 
 				// Clear any previous padding and set the image as top/center
-				SetPadding(0, 0, 0, 0);
+				UpdateContentEdge();
 				SetCompoundDrawablesWithIntrinsicBounds(null, image, null, null);
 
 				// Keep track of the image height so we can use it in OnLayout
@@ -470,9 +484,20 @@ namespace Xamarin.Forms.Platform.Android.FastRenderers
 			_textColorSwitcher.Value.UpdateTextColor(this, Button.TextColor);
 		}
 
-		void UpdateDrawable()
+		void UpdatePadding()
 		{
-			_backgroundTracker?.UpdateDrawable();
+			SetPadding(
+				(int)(Context.ToPixels(Button.Padding.Left) + _paddingDeltaPix.Left),
+				(int)(Context.ToPixels(Button.Padding.Top) + _paddingDeltaPix.Top),
+				(int)(Context.ToPixels(Button.Padding.Right) + _paddingDeltaPix.Right),
+				(int)(Context.ToPixels(Button.Padding.Bottom) + _paddingDeltaPix.Bottom)
+			);
+		}
+
+		void UpdateContentEdge(Thickness? delta = null)
+		{
+			_paddingDeltaPix = delta ?? new Thickness();
+			UpdatePadding();
 		}
 
 	}

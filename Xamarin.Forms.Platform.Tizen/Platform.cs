@@ -2,12 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.ComponentModel;
 using Xamarin.Forms.Internals;
+using Xamarin.Forms.PlatformConfiguration.TizenSpecific;
 using ElmSharp;
 using EProgressBar = ElmSharp.ProgressBar;
 using EButton = ElmSharp.Button;
 using EColor = ElmSharp.Color;
-using System.ComponentModel;
 
 namespace Xamarin.Forms.Platform.Tizen
 {
@@ -35,19 +36,17 @@ namespace Xamarin.Forms.Platform.Tizen
 		/// Gets the renderer associated with the <c>view</c>. If it doesn't exist, creates a new one.
 		/// </summary>
 		/// <returns>Renderer associated with the <c>view</c>.</returns>
-		/// <param name="view">View for which the renderer is going to be returned.</param>
-		public static IVisualElementRenderer GetOrCreateRenderer(VisualElement view)
+		/// <param name="element">VisualElement for which the renderer is going to be returned.</param>
+		public static IVisualElementRenderer GetOrCreateRenderer(VisualElement element)
 		{
-			return GetRenderer(view) ?? AttachRenderer(view);
+			return GetRenderer(element) ?? CreateRenderer(element);
 		}
 
-		internal static IVisualElementRenderer AttachRenderer(VisualElement view)
+		internal static IVisualElementRenderer CreateRenderer(VisualElement element)
 		{
-			IVisualElementRenderer visualElementRenderer = Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(view) ?? new DefaultRenderer();
-
-			visualElementRenderer.SetElement(view);
-
-			return visualElementRenderer;
+			IVisualElementRenderer renderer = Registrar.Registered.GetHandlerForObject<IVisualElementRenderer>(element) ?? new DefaultRenderer();
+			renderer.SetElement(element);
+			return renderer;
 		}
 
 		internal static ITizenPlatform CreatePlatform(EvasObject parent)
@@ -88,6 +87,8 @@ namespace Xamarin.Forms.Platform.Tizen
 		Native.Dialog _pageBusyDialog;
 		int _pageBusyCount;
 		Naviframe _internalNaviframe;
+
+		HashSet<EvasObject> _alerts = new HashSet<EvasObject>();
 
 		public event EventHandler<RootNativeViewChangedEventArgs> RootNativeViewChanged;
 
@@ -158,7 +159,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			Page = newRoot;
 			Page.Platform = this;
 
-			IVisualElementRenderer pageRenderer = Platform.AttachRenderer(Page);
+			IVisualElementRenderer pageRenderer = Platform.CreateRenderer(Page);
 			var naviItem = _internalNaviframe.Push(pageRenderer.NativeView);
 			naviItem.TitleBarVisible = false;
 
@@ -280,7 +281,7 @@ namespace Xamarin.Forms.Platform.Tizen
 		async Task INavigation.PushModalAsync(Page modal, bool animated)
 		{
 			var previousPage = CurrentPageController;
-			Device.BeginInvokeOnMainThread(()=> previousPage?.SendDisappearing());
+			Device.BeginInvokeOnMainThread(() => previousPage?.SendDisappearing());
 
 			_navModel.PushModal(modal);
 
@@ -404,6 +405,12 @@ namespace Xamarin.Forms.Platform.Tizen
 					Orientation = PopupOrientation.Top,
 				};
 
+				if (Device.Idiom == TargetIdiom.Watch)
+				{
+					_pageBusyDialog.Style = "circle";
+					_pageBusyDialog.BackgroundColor = EColor.Transparent;
+				}
+
 				var activity = new EProgressBar(_pageBusyDialog)
 				{
 					Style = "process_large",
@@ -433,10 +440,11 @@ namespace Xamarin.Forms.Platform.Tizen
 			if (!PageIsChildOfPlatform(sender))
 				return;
 
-			Native.Dialog alert = new Native.Dialog(Forms.NativeParent);
+			Native.Dialog alert = Native.Dialog.CreateDialog(Forms.NativeParent, (arguments.Accept != null));
+
 			alert.Title = arguments.Title;
 			var message = arguments.Message.Replace("&", "&amp;").Replace("<", "&lt;").Replace(">", "&gt;").Replace(Environment.NewLine, "<br>");
-			alert.Text = message;
+			alert.Message = message;
 
 			EButton cancel = new EButton(alert) { Text = arguments.Cancel };
 			alert.NegativeButton = cancel;
@@ -464,6 +472,8 @@ namespace Xamarin.Forms.Platform.Tizen
 			};
 
 			alert.Show();
+			_alerts.Add(alert);
+			alert.Dismissed += (s, e) => _alerts.Remove(alert);
 		}
 
 		void ActionSheetSignalNameHandler(Page sender, ActionSheetArguments arguments)
@@ -472,7 +482,7 @@ namespace Xamarin.Forms.Platform.Tizen
 			if (!PageIsChildOfPlatform(sender))
 				return;
 
-			Native.Dialog alert = new Native.Dialog(Forms.NativeParent);
+			Native.Dialog alert = Native.Dialog.CreateDialog(Forms.NativeParent);
 
 			alert.Title = arguments.Title;
 			Box box = new Box(alert);
@@ -482,6 +492,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				Native.Button destruction = new Native.Button(alert)
 				{
 					Text = arguments.Destruction,
+					Style = ButtonStyle.Text,
 					TextColor = EColor.Red,
 					AlignmentX = -1
 				};
@@ -499,6 +510,7 @@ namespace Xamarin.Forms.Platform.Tizen
 				Native.Button button = new Native.Button(alert)
 				{
 					Text = buttonName,
+					Style = ButtonStyle.Text,
 					AlignmentX = -1
 				};
 				button.Clicked += (s, evt) =>
@@ -529,6 +541,9 @@ namespace Xamarin.Forms.Platform.Tizen
 			};
 
 			alert.Show();
+
+			_alerts.Add(alert);
+			alert.Dismissed += (s, e) => _alerts.Remove(alert);
 		}
 
 		bool PageIsChildOfPlatform(Page page)

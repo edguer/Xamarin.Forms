@@ -195,8 +195,6 @@ namespace Xamarin.Forms.Platform.Tizen
 
 			List<Assembly> _assemblies;
 
-			public static bool IsTizenSpecificAvailable { get; private set; }
-
 			static AppDomain()
 			{
 				CurrentDomain = new AppDomain();
@@ -225,13 +223,6 @@ namespace Xamarin.Forms.Platform.Tizen
 						{
 							Assembly refAsm = Assembly.Load(refName);
 							RegisterAssemblyRecursively(refAsm);
-							if (refName.Name == "Xamarin.Forms.Core")
-							{
-								if (refAsm.GetType("Xamarin.Forms.PlatformConfiguration.TizenSpecific.VisualElement") != null)
-								{
-									IsTizenSpecificAvailable = true;
-								}
-							}
 						}
 						catch
 						{

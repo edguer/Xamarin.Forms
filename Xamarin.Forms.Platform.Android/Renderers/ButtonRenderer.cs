@@ -21,6 +21,7 @@ namespace Xamarin.Forms.Platform.Android
 		Typeface _defaultTypeface;
 		bool _isDisposed;
 		int _imageHeight = -1;
+		Thickness _paddingDeltaPix = new Thickness();
 
 		public ButtonRenderer(Context context) : base(context)
 		{
@@ -59,9 +60,13 @@ namespace Xamarin.Forms.Platform.Android
 			{
 				// We've got an image (and no text); it's already centered horizontally,
 				// we just need to adjust the padding so it centers vertically
-				var diff = (b - t - _imageHeight) / 2;
+				var diff = ((b - Context.ToPixels(Element.Padding.Bottom + Element.Padding.Top)) - t - _imageHeight) / 2;
 				diff = Math.Max(diff, 0);
-				Control?.SetPadding(0, diff, 0, -diff);
+				UpdateContentEdge(new Thickness(0, diff, 0, -diff));
+			}
+			else
+			{
+				UpdateContentEdge();
 			}
 
 			base.OnLayout(changed, l, t, r, b);
@@ -77,6 +82,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (disposing)
 			{
 				_backgroundTracker?.Dispose();
+				_backgroundTracker = null;
 			}
 
 			base.Dispose(disposing);
@@ -131,7 +137,9 @@ namespace Xamarin.Forms.Platform.Android
 				UpdateBitmap();
 			else if (e.PropertyName == VisualElement.IsVisibleProperty.PropertyName)
 				UpdateText();
-			
+			else if (e.PropertyName == Button.PaddingProperty.PropertyName)
+				UpdatePadding();
+
 			base.OnElementPropertyChanged(sender, e);
 		}
 
@@ -140,7 +148,7 @@ namespace Xamarin.Forms.Platform.Android
 			if (Element == null || Control == null)
 				return;
 
-			_backgroundTracker?.UpdateBackgroundColor();
+			_backgroundTracker?.UpdateDrawable();
 		}
 
 		void UpdateAll()
@@ -150,7 +158,8 @@ namespace Xamarin.Forms.Platform.Android
 			UpdateBitmap();
 			UpdateTextColor();
 			UpdateEnabled();
-			UpdateDrawable();
+			UpdateBackgroundColor();
+			UpdatePadding();
 		}
 
 		void UpdateBitmap()
@@ -175,7 +184,7 @@ namespace Xamarin.Forms.Platform.Android
 				// to handle the vertical centering 
 
 				// Clear any previous padding and set the image as top/center
-				Control.SetPadding(0, 0, 0, 0);
+				UpdateContentEdge();
 				Control.SetCompoundDrawablesWithIntrinsicBounds(null, image, null, null);
 
 				// Keep track of the image height so we can use it in OnLayout
@@ -207,11 +216,6 @@ namespace Xamarin.Forms.Platform.Android
 			}
 
 			image?.Dispose();
-		}
-
-		void UpdateDrawable()
-		{
-			_backgroundTracker.UpdateDrawable();
 		}
 
 		void UpdateEnabled()
@@ -258,6 +262,22 @@ namespace Xamarin.Forms.Platform.Android
 		void UpdateTextColor()
 		{
 			_textColorSwitcher?.UpdateTextColor(Control, Element.TextColor);
+		}
+
+		void UpdatePadding()
+		{
+			Control?.SetPadding(
+				(int)(Context.ToPixels(Element.Padding.Left) + _paddingDeltaPix.Left),
+				(int)(Context.ToPixels(Element.Padding.Top) + _paddingDeltaPix.Top),
+				(int)(Context.ToPixels(Element.Padding.Right) + _paddingDeltaPix.Right),
+				(int)(Context.ToPixels(Element.Padding.Bottom) + _paddingDeltaPix.Bottom)
+			);
+		}
+
+		void UpdateContentEdge(Thickness? delta = null)
+		{
+			_paddingDeltaPix = delta ?? new Thickness();
+			UpdatePadding();
 		}
 
 		class ButtonClickListener : Object, IOnClickListener

@@ -36,6 +36,7 @@ namespace Xamarin.Forms.Xaml
 		public bool StopOnResourceDictionary { get; }
 		public bool VisitNodeOnDataTemplate => true;
 		public bool SkipChildren(INode node, INode parentNode) => false;
+		public bool IsResourceDictionary(ElementNode node) => typeof(ResourceDictionary).IsAssignableFrom(Context.Types[node]);
 
 		public void Visit(ValueNode node, INode parentNode)
 		{
@@ -271,7 +272,10 @@ namespace Xamarin.Forms.Xaml
 #if NETSTANDARD1_0
 			var bindableFieldInfo = elementType.GetFields().FirstOrDefault(fi => fi.Name == localName + "Property");
 #else
-			var bindableFieldInfo = elementType.GetFields(BindingFlags.Static | BindingFlags.Public|BindingFlags.FlattenHierarchy).FirstOrDefault(fi => fi.Name == localName + "Property");
+			// F# does not support public fields, so allow internal (Assembly) as well as public
+			const BindingFlags supportedFlags = BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.FlattenHierarchy;
+			var bindableFieldInfo = elementType.GetFields(supportedFlags)
+												.FirstOrDefault(fi => (fi.IsAssembly || fi.IsPublic) && fi.Name == localName + "Property");
 #endif
 			Exception exception = null;
 			if (exception == null && bindableFieldInfo == null) {
@@ -554,8 +558,7 @@ namespace Xamarin.Forms.Xaml
 				}
 			}
 #else
-			while (elementType != null && propertyInfo == null)
-			{
+			while (elementType != null && propertyInfo == null) {
 				propertyInfo = elementType.GetProperty(localName, BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.DeclaredOnly);
 				elementType = elementType.BaseType;
 			}

@@ -128,50 +128,50 @@ namespace Xamarin.Forms
 			return GetNamedSize(size, targetElementType, false);
 		}
 
-		[Obsolete("OnPlatform is obsolete as of version 2.3.4. Please use switch(RuntimePlatform) instead.")]
-		public static void OnPlatform(Action iOS = null, Action Android = null, Action WinPhone = null, Action Default = null)
-		{
-			switch (OS)
-			{
-				case TargetPlatform.iOS:
-					if (iOS != null)
-						iOS();
-					else if (Default != null)
-						Default();
-					break;
-				case TargetPlatform.Android:
-					if (Android != null)
-						Android();
-					else if (Default != null)
-						Default();
-					break;
-				case TargetPlatform.Windows:
-				case TargetPlatform.WinPhone:
-					if (WinPhone != null)
-						WinPhone();
-					else if (Default != null)
-						Default();
-					break;
-				case TargetPlatform.Other:
-					if (Default != null)
-						Default();
-					break;
-			}
-		}
+        [Obsolete("OnPlatform is obsolete as of version 2.3.4. Please use 'switch (Device.RuntimePlatform)' instead.")]
+        public static void OnPlatform(Action iOS = null, Action Android = null, Action WinPhone = null, Action Default = null)
+        {
+            switch (OS)
+            {
+                case TargetPlatform.iOS:
+                    if (iOS != null)
+                        iOS();
+                    else if (Default != null)
+                        Default();
+                    break;
+                case TargetPlatform.Android:
+                    if (Android != null)
+                        Android();
+                    else if (Default != null)
+                        Default();
+                    break;
+                case TargetPlatform.Windows:
+                case TargetPlatform.WinPhone:
+                    if (WinPhone != null)
+                        WinPhone();
+                    else if (Default != null)
+                        Default();
+                    break;
+                case TargetPlatform.Other:
+                    if (Default != null)
+                        Default();
+                    break;
+            }
+        }
 
-		[Obsolete("OnPlatform<> (generic) is obsolete as of version 2.3.4. Please use switch(RuntimePlatform) instead.")]
-		public static T OnPlatform<T>(T iOS, T Android, T WinPhone)
-		{
-			switch (OS)
-			{
-				case TargetPlatform.iOS:
-					return iOS;
-				case TargetPlatform.Android:
-					return Android;
-				case TargetPlatform.Windows:
-				case TargetPlatform.WinPhone:
-					return WinPhone;
-			}
+        [Obsolete("OnPlatform<> (generic) is obsolete as of version 2.3.4. Please use 'switch (Device.RuntimePlatform)' instead.")]
+        public static T OnPlatform<T>(T iOS, T Android, T WinPhone)
+        {
+            switch (OS)
+            {
+                case TargetPlatform.iOS:
+                    return iOS;
+                case TargetPlatform.Android:
+                    return Android;
+                case TargetPlatform.Windows:
+                case TargetPlatform.WinPhone:
+                    return WinPhone;
+            }
 
 			return iOS;
 		}
@@ -227,7 +227,7 @@ namespace Xamarin.Forms
 
 			public static readonly Style ListItemDetailTextStyle = new Style(typeof(Label)) { BaseResourceKey = ListItemDetailTextStyleKey };
 
-			public static readonly Style CaptionStyle = new Style(typeof(Label)) { BaseResourceKey = CaptionStyleKey };
-		}
-	}
+            public static readonly Style CaptionStyle = new Style(typeof(Label)) { BaseResourceKey = CaptionStyleKey };
+        }
+    }
 }
