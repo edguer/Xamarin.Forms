@@ -52,16 +52,16 @@ namespace Xamarin.Forms.Controls
 			_listView.ScrollTo (_items[2][1], _items[2], ScrollToPosition.Center, true);
 
 			var visible = new Button { Text = "Visible" };
-			visible.Clicked += (sender, args) => _listView.ScrollTo (_items[4][4], _items[4], ScrollToPosition.MakeVisible, _animate);
+			visible.Clicked += (sender, args) => _listView.ScrollTo (_items[4][2], _items[4], ScrollToPosition.MakeVisible, _animate);
 
 			var start = new Button { Text = "Start" };
-			start.Clicked += (sender, args) => _listView.ScrollTo (_items[4][4], _items[4], ScrollToPosition.Start, _animate);
+			start.Clicked += (sender, args) => _listView.ScrollTo (_items[4][3], _items[4], ScrollToPosition.Start, _animate);
 
 			var center = new Button { Text = "Center"};
 			center.Clicked += (sender, args) => _listView.ScrollTo (_items[4][4], _items[4], ScrollToPosition.Center, _animate);
 
 			var end = new Button { Text = "End" };
-			end.Clicked += (sender, args) => _listView.ScrollTo (_items[4][4], _items[4], ScrollToPosition.End, _animate);
+			end.Clicked += (sender, args) => _listView.ScrollTo (_items[4][5], _items[4], ScrollToPosition.End, _animate);
 
 			var animate = new Button { Text = "Animate" };
 			animate.Clicked += (sender, args) => {

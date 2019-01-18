@@ -315,9 +315,33 @@ namespace Xamarin.Forms.Platform.MacOS
 		{
 		}
 
-		//TODO: Implement ScrollTo
 		void OnScrollToRequested(object sender, ScrollToRequestedEventArgs e)
 		{
+			int index = 0;
+			switch (e.Position)
+			{
+				case ScrollToPosition.MakeVisible:
+					var scrollArgs = (ITemplatedItemsListScrollToRequestedEventArgs)e;
+					var templatedItems = TemplatedItemsView.TemplatedItems;
+					if (Element.IsGroupingEnabled)
+					{
+						index = templatedItems.GetGlobalIndexOfItem(scrollArgs.Group, scrollArgs.Item);
+					}
+					else
+					{
+						index = templatedItems.GetGlobalIndexOfItem(scrollArgs.Item);
+					}
+					break;
+				case ScrollToPosition.Center:
+				case ScrollToPosition.End:
+				case ScrollToPosition.Start:
+				default:
+					break;
+			}
+
+			if (index != -1)
+				_table.ScrollRowToVisible(index);
+			
 		}
 
 		//TODO: Implement Footer

@@ -23,6 +23,7 @@ namespace Xamarin.Forms
 		DataTemplate SelectDataTemplate(object item);
 		int GetGlobalIndexForGroup(ITemplatedItemsList<TItem> group);
 		int GetGlobalIndexOfItem(object item);
+		int GetGlobalIndexOfItem(object group, object item);
 		ITemplatedItemsList<TItem> GetGroup(int index);
 		Tuple<int, int> GetGroupAndIndexOfItem(object item);
 		Tuple<int, int> GetGroupAndIndexOfItem(object group, object item);
