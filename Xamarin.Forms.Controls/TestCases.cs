@@ -12,9 +12,9 @@ namespace Xamarin.Forms.Controls
 		{
 			public static Dictionary<string, Action> PageToAction = new Dictionary<string, Action> ();
 
-			bool _filterBugzilla;
-			bool _filterNone;
-			bool _filterGitHub;
+			bool _filterBugzilla = true;
+			bool _filterNone = true;
+			bool _filterGitHub = true;
 			string _filter;
 
 			static TextCell MakeIssueCell (string text, string detail, Action tapped)
@@ -227,6 +227,15 @@ namespace Xamarin.Forms.Controls
 
 					issueCells = issueCells.Concat(untrackedIssueCells);
 				}
+
+				if(!string.IsNullOrEmpty(_filter) && _filterBugzilla && _filterGitHub && _filterNone)
+				{
+					issueCells =
+						from issueModel in _issues
+						where issueModel.Matches(filter)
+						orderby issueModel.IssueNumber descending
+						select MakeIssueCell(issueModel.Name, issueModel.Description, issueModel.Action);
+				}
 				
 				if (_section != null)
 				{
@@ -316,17 +325,17 @@ namespace Xamarin.Forms.Controls
 				HorizontalOptions = LayoutOptions.Fill
 			};
 
-			var bzSwitch = new Switch { IsToggled = true };
+			var bzSwitch = new Switch { IsToggled = false };
 			trackerFilterLayout.Children.Add(new Label { Text = "Bugzilla" });
 			trackerFilterLayout.Children.Add(bzSwitch);
 			bzSwitch.Toggled += (sender, args) => testCaseScreen.FilterTracker(IssueTracker.Bugzilla);
 
-			var ghSwitch = new Switch { IsToggled = true };
+			var ghSwitch = new Switch { IsToggled = false };
 			trackerFilterLayout.Children.Add(new Label { Text = "GitHub" });
 			trackerFilterLayout.Children.Add(ghSwitch);
 			ghSwitch.Toggled += (sender, args) => testCaseScreen.FilterTracker(IssueTracker.Github);
 
-			var noneSwitch = new Switch { IsToggled = true };
+			var noneSwitch = new Switch { IsToggled = false };
 			trackerFilterLayout.Children.Add(new Label { Text = "None" });
 			trackerFilterLayout.Children.Add(noneSwitch);
 			noneSwitch.Toggled += (sender, args) => testCaseScreen.FilterTracker(IssueTracker.None);
